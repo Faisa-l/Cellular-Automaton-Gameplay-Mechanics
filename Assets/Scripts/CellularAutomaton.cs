@@ -12,18 +12,22 @@ public class CellularAutomaton : MonoBehaviour
     [SerializeField, Tooltip("Size of the cellular automaton"), Range(0, 50)]
     int size;
 
+    [SerializeField]
+    Cell[] initialState;
+
     Grid grid;
     GridVisualiser visualiser;
 
     void Initialise()
     {
+        size = initialState.Length;
         grid = new Grid();
         if (!TryGetComponent<GridVisualiser>(out visualiser))
         {
             visualiser = gameObject.AddComponent<GridVisualiser>();
         }
 
-        grid.Initialise(size);
+        grid.Initialise(size, initialState);
         visualiser.Initialise(cellPrefab, grid);
 
         visualiser.Draw();

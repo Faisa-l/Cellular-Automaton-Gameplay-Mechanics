@@ -2,6 +2,9 @@
 /// Defines the states of a cell in a grid.
 /// Cells define data which can be used to compute their next state.
 /// </summary>
+/// 
+
+[System.Serializable]
 public struct Cell
 {
     public CellState state;

@@ -7,9 +7,13 @@ public struct Grid
     Cell[] cells;
 
     // Load the grid
-    public void Initialise(int size)
+    public void Initialise(int size, Cell[] initialState)
     {
         cells = new Cell[size];
+        for (int i = 0; i <= size - 1; i++)
+        {
+            cells[i].state = initialState[i].state;
+        }
     }
 
     // Unload the grid

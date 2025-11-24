@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -6,10 +7,14 @@ using UnityEngine;
 /// </summary>
 public class GridVisualiser : MonoBehaviour
 {
+    [SerializeField]
+    StateColor[] colorMap;
+
     GameObject prefab;
     Grid grid;
 
     GameObject[] drawnObjects;
+    Dictionary<CellState, Color> colorPairs;
     static MaterialPropertyBlock block;
 
     // Load the visualiser with data
@@ -17,8 +22,13 @@ public class GridVisualiser : MonoBehaviour
     {
         this.prefab = prefab;
         this.grid = grid;
-
         block = new MaterialPropertyBlock();
+        colorPairs = new Dictionary<CellState, Color>();
+
+        foreach (var pair in colorMap)
+        {
+            colorPairs.Add(pair.state, pair.color);
+        }
     }
 
     // Draws the grid 
@@ -30,16 +40,20 @@ public class GridVisualiser : MonoBehaviour
         {
             GameObject obj = Instantiate(prefab);
             obj.transform.localPosition = Vector3.right * i;
-            ApplyCellColour(obj);
             drawnObjects[i] = obj;
+            ApplyCellColour(i);
         }
     }
 
-    void ApplyCellColour(GameObject obj)
+    void ApplyCellColour(int i)
     {
+        var obj = drawnObjects[i];
         var renderer = obj.GetComponent<Renderer>();
+        colorPairs.TryGetValue(grid[i].state, out var color);
+        Debug.Log(grid[i].state);
+
         renderer.GetPropertyBlock(block);
-        block.SetColor("_BaseColor", Random.ColorHSV());
+        block.SetColor("_BaseColor", color);
         renderer.SetPropertyBlock(block);
     }
 }
