@@ -24,7 +24,7 @@ public class CellularAutomaton : MonoBehaviour
     Grid grid;
     GridVisualiser visualiser;
 
-    void Initialise()
+    public void Initialise()
     {
         size = initialState.Length;
         grid = new Grid();
@@ -36,13 +36,12 @@ public class CellularAutomaton : MonoBehaviour
         grid.Initialise(size, initialState, functionName, neighbourhoodSize);
         visualiser.Initialise(cellPrefab, grid);
         visualiser.Draw();
-
     }
 
-    private void Awake()
+    public void NextTick()
     {
-        Initialise();
         grid.Update();
         visualiser.UpdateVisualisation();
     }
+
 }

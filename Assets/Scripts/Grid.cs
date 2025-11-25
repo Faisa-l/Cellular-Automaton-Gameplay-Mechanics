@@ -20,8 +20,8 @@ public struct Grid
         get => cells[index];
         set => cells[index] = value;
     }
-    public int Size => cells.Length;
-
+    public readonly int Size => cells.Length;
+    
     // Load the grid
     public void Initialise(int size, Cell[] initialState, FunctionLibrary.FunctionName funcName, int nSize = 1)
     {
@@ -41,7 +41,7 @@ public struct Grid
 
 
     // Update the state of cell i based on its neighbourhood
-    CellState UpdateCell(int i, Cell[] neighbourhood)
+    readonly CellState UpdateCell(int i, Cell[] neighbourhood)
     {
         CellState outState = cells[i].state;
 
@@ -52,7 +52,7 @@ public struct Grid
     }
 
     // Progress through the next time step of the grid
-    public void Update()
+    public readonly void Update()
     {
         for (int i = 0;i < cells.Length; i++)
         {
