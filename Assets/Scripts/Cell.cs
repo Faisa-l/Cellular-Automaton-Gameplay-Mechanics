@@ -8,7 +8,7 @@
 public struct Cell
 {
     public CellState state;
-        
+    
     // NOTE: As of writing this currently will not include any additional data
 }
 

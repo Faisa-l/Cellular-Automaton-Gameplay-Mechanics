@@ -45,12 +45,21 @@ public class GridVisualiser : MonoBehaviour
         }
     }
 
+    // Changes the colours on all the cells
+    public void UpdateVisualisation()
+    {
+        for (int i = 0; i < grid.Size; i++)
+        {
+            ApplyCellColour(i);
+        }
+    }
+
+    // Individually change the colour of cell i
     void ApplyCellColour(int i)
     {
         var obj = drawnObjects[i];
         var renderer = obj.GetComponent<Renderer>();
         colorPairs.TryGetValue(grid[i].state, out var color);
-        Debug.Log(grid[i].state);
 
         renderer.GetPropertyBlock(block);
         block.SetColor("_BaseColor", color);
