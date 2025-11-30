@@ -6,9 +6,9 @@ public static class FunctionLibrary
 {
     // All functions will return the cell state for the given cell
     public delegate CellState Function(Cell target, Cell[] neighbourhood);
-    public enum FunctionName { SwitchState }
+    public enum FunctionName { SwitchState , InheritNeighbourSingular}
 
-    static Function[] functions = { SwitchState };
+    static Function[] functions = { SwitchState , InheritNeighbourSingular};
 
     // Return the function callback
     public static Function GetFunction(FunctionName name)
@@ -21,6 +21,19 @@ public static class FunctionLibrary
         CellState outState = target.state == CellState.Dead ? CellState.Alive : CellState.Dead;
 
         return outState;
+    }
+
+    // Return alive if only one neighbour is alive
+    public static CellState InheritNeighbourSingular(Cell target, Cell[] neighbourhood)
+    {
+        int i = 0;
+    
+        foreach (var cell in neighbourhood)
+        {
+            if (cell.state == CellState.Alive) i++;
+        }
+
+        return i == 1 ? CellState.Alive : CellState.Dead;
     }
 }
 

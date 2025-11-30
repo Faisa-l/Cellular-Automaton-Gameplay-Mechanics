@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static UnityEngine.InputSystem.InputAction;
 
 
@@ -18,6 +19,9 @@ public class Game : MonoBehaviour
     // Bind to an event to proceed the tick of the automaton
     public void ProceedTick(CallbackContext context)
     {
-        automaton.NextTick();
+        if (context.phase == InputActionPhase.Canceled)
+        {
+            automaton.NextTick();
+        }
     }
 }

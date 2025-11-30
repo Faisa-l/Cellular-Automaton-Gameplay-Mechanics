@@ -54,26 +54,38 @@ public struct Grid
     // Progress through the next time step of the grid
     public readonly void Update()
     {
+        Cell[] newCells = new Cell[cells.Length];
+        Array.Copy(cells, newCells, cells.Length);
+
         for (int i = 0;i < cells.Length; i++)
         {
             Cell[] neighbourhood = GetCellNeighbourhood(i);
 
             CellState newState = UpdateCell(i, neighbourhood);
-            cells[i].state = newState;
+            newCells[i].state = newState;
         }
+        Array.Copy(newCells, cells, newCells.Length);
     }
 
     // Get the neighbourhood of cell index i
     private readonly Cell[] GetCellNeighbourhood(int i)
     {
         Cell[] neighbourhood = new Cell[neighbourhoodSize * 2];
+
+        // Set default state
+        // Maybe this should be in Cell's constructor
+        for (int k = 0; k < neighbourhoodSize + 1; k++)
+        {
+            neighbourhood[k].state = CellState.Dead;
+        }
+
         for (int j = 1; j < neighbourhoodSize + 1; j++)
         {
             if (i - j >= 0)
             {
                 neighbourhood[j - 1] = cells[i - j];
             }
-            if (i + j < neighbourhood.Length)
+            if (i + j < cells.Length)
             {
                 neighbourhood[j] = cells[i + j];
             }

@@ -150,17 +150,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 7790273893292421316, guid: 1b4ee666d235cf841b1c7772e22de35a, type: 3}
-  size: 7
+  size: 5
   neighbourhoodSize: 1
   initialState:
   - state: 1
-  - state: 0
-  - state: 0
-  - state: 0
-  - state: 0
   - state: 1
   - state: 0
-  functionName: 0
+  - state: 1
+  - state: 1
+  functionName: 1
 --- !u!4 &199781311
 Transform:
   m_ObjectHideFlags: 0
