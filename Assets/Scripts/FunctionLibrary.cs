@@ -1,4 +1,3 @@
-
 /// <summary>
 /// Holds all the types of functions you could use in a Grid's UpdateCell call.
 /// </summary>

@@ -1,5 +1,6 @@
 using System;
-using System.Diagnostics;
+
+using static FunctionLibrary;
 
 /// <summary>
 /// A grid represents the area which cells inhabit.
@@ -9,8 +10,12 @@ public struct Grid
     // All the cells actually live here
     Cell[] cells;
     int neighbourhoodSize;
-    FunctionLibrary.FunctionName functionName;
-    FunctionLibrary.Function function;
+    FunctionName functionName;
+    Function function;
+
+    public int Rows { get; private set; }
+    public int Columns { get; private set; }
+    public readonly int Size => (Rows * Columns);
 
     // NOTE: neighbourhoodSize refers to how many cells left/right are in the neighbourhood
 
@@ -20,25 +25,32 @@ public struct Grid
         get => cells[index];
         set => cells[index] = value;
     }
-    public readonly int Size => cells.Length;
-    
-    // Load the grid
-    public void Initialise(int size, Cell[] initialState, FunctionLibrary.FunctionName funcName, int nSize = 1)
+
+    /// <summary>
+    /// Load the grid.
+    /// </summary>
+    /// <param name="rows"> Number of rows. </param>
+    /// <param name="columns"> Length of each row. </param>
+    /// <param name="initialState"> Starting state of the Grid. </param>
+    /// <param name="funcName"> Function name to perform on the neighbourhood. </param>
+    /// <param name="nSize"> Size of the neighbourhood, measured as the distance from a given cell. </param>
+    public void Initialise(int rows, int columns, Cell[] initialState, FunctionName funcName, int nSize = 1)
     {
-        cells = new Cell[size];
-        for (int i = 0; i <= size - 1; i++)
+        Rows = rows;
+        Columns = columns;
+        cells = new Cell[Size];
+        for (int i = 0; i <= Size - 1; i++)
         {
-            cells[i].state = initialState[i].state;
+            cells[i].state = CellState.Alive;
         }
 
         neighbourhoodSize = nSize;
         functionName = funcName;
-        function = FunctionLibrary.GetFunction(functionName);
+        function = GetFunction(functionName);
     }
 
     // Unload the grid
     public void Dispose() => cells = null;
-
 
     // Update the state of cell i based on its neighbourhood
     readonly CellState UpdateCell(int i, Cell[] neighbourhood)
@@ -67,30 +79,96 @@ public struct Grid
         Array.Copy(newCells, cells, newCells.Length);
     }
 
-    // Get the neighbourhood of cell index i
-    private readonly Cell[] GetCellNeighbourhood(int i)
+    // Get the neighbourhood of the cell index.
+    private readonly Cell[] GetCellNeighbourhood(int index)
     {
-        Cell[] neighbourhood = new Cell[neighbourhoodSize * 2];
+        // CURRENTLY ONLY SUPPORTS NEIGHBOURHOOD SIZE OF 1
+        // Using a lazy method: Combine neighbours of the individual rows above-below and this.
+        Cell[] neighbourhood = new Cell[4 * neighbourhoodSize * (neighbourhoodSize + 1)];
+        int pointer = 0;
+        GetRowColumn(index, out int row, out int _);
 
-        // Set default state
-        // Maybe this should be in Cell's constructor
-        for (int k = 0; k < neighbourhoodSize + 1; k++)
+        // Check rows above and below
+        for (int i = 1; i < neighbourhoodSize + 1; i++)
         {
-            neighbourhood[k].state = CellState.Dead;
+            if (row - i >= 0)
+            {
+                var nbrs = new Cell[(neighbourhoodSize * 2) + 1];
+                GetRowNeighbours(index - (Columns * i), ref nbrs, true);
+
+                Array.Copy(nbrs, 0, neighbourhood, pointer, nbrs.Length);
+                pointer += nbrs.Length;
+            }
+
+            if (row + i < Rows)
+            {
+                var nbrs = new Cell[(neighbourhoodSize * 2) + 1];
+                GetRowNeighbours(index + (Columns * i), ref nbrs, true);
+
+                Array.Copy(nbrs, 0, neighbourhood, pointer, nbrs.Length);
+                pointer += nbrs.Length;
+            }
         }
 
-        for (int j = 1; j < neighbourhoodSize + 1; j++)
-        {
-            if (i - j >= 0)
-            {
-                neighbourhood[j - 1] = cells[i - j];
-            }
-            if (i + j < cells.Length)
-            {
-                neighbourhood[j] = cells[i + j];
-            }
-        }
+        // Check this row
+        Cell[] thisNbrs = new Cell[neighbourhoodSize * 2];
+        GetRowNeighbours(index, ref thisNbrs);
+        Array.Copy(thisNbrs, 0, neighbourhood, pointer, thisNbrs.Length);
 
         return neighbourhood;
+    }
+
+    /// <summary>
+    /// Returns the left-right neighbourhood of cells at a given index.
+    /// </summary>
+    /// <param name="index">Cell index to search.</param>
+    /// <param name="neighbours">Cell array to write into.</param>
+    /// <param name="andSelf">Whether this should write the indexed cell into the array, as the last element.</param>
+    private readonly void GetRowNeighbours(int index, ref Cell[] neighbours, bool andSelf = false)
+    {
+        if (neighbourhoodSize == 0) return;
+
+        int p = 0;
+        for (int i = 1; i < neighbourhoodSize + 1; i++)
+        {
+            if (index - i > (Rows * Columns) - Columns)
+            {
+                neighbours[p] = cells[index - i];
+                p++;
+            }
+            if (index + i < Rows * Columns)
+            {
+                neighbours[p] = cells[index + i];
+                p++;
+            }
+        }
+        if (andSelf)
+        {
+            neighbours[^1] = cells[index];
+        }
+    }
+
+    /// <summary>
+    /// Returns the row and column of a given cell index.
+    /// </summary>
+    /// <param name="i">Index of the cell.</param>
+    /// <param name="row">Row of that index.</param>
+    /// <param name="column">Column of that index.</param>
+    public readonly void GetRowColumn(int i, out int row, out int column)
+    {
+        row = i / Columns;
+        column = i % Columns;
+    }
+
+    /// <summary>
+    /// Return the cell array of an entire row.
+    /// </summary>
+    public readonly Cell[] GetRow(int row)
+    {
+        Cell[] arr = new Cell[Columns];
+        int pointer = (row - 1) * Columns;
+        
+        Array.Copy(cells, pointer, arr, 0, Columns);
+        return arr;
     }
 }

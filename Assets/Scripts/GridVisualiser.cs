@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Handles drawing the grid itself.
-/// Currently, will draw its grid using the prefab.
+/// Currently, it will draw its grid using the prefab.
 /// </summary>
 public class GridVisualiser : MonoBehaviour
 {
@@ -17,7 +17,11 @@ public class GridVisualiser : MonoBehaviour
     Dictionary<CellState, Color> colorPairs;
     static MaterialPropertyBlock block;
 
-    // Load the visualiser with data
+    /// <summary>
+    /// Load the visualiser with data.
+    /// </summary>
+    /// <param name="prefab">Prefab game object to represent each cell.</param>
+    /// <param name="grid">Grid instance to visualise.</param>
     public void Initialise(GameObject prefab, Grid grid)
     {
         this.prefab = prefab;
@@ -38,8 +42,11 @@ public class GridVisualiser : MonoBehaviour
 
         for (int i = 0; i < grid.Size; i++)
         {
+            grid.GetRowColumn(i, out int row, out int column);
+            Vector3 position = new(row, 0, column);
             GameObject obj = Instantiate(prefab);
-            obj.transform.localPosition = Vector3.right * i;
+
+            obj.transform.localPosition = position;
             drawnObjects[i] = obj;
             ApplyCellColour(i);
         }
