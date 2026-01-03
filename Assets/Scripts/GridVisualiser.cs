@@ -72,5 +72,16 @@ public class GridVisualiser : MonoBehaviour
         block.SetColor("_BaseColor", color);
         renderer.SetPropertyBlock(block);
     }
+
+    public bool TryGetTouchedCellIndex(Ray ray, out int index)
+    {
+        // Where ray intersects the xz plane
+        Vector3 intersection = ray.origin - ray.direction * (ray.origin.y /  ray.direction.y);
+
+        int row = Mathf.RoundToInt(intersection.x);
+        int column = Mathf.RoundToInt(intersection.z);
+
+        return grid.TryGetCellIndex(row, column, out index);
+    }
 }
 

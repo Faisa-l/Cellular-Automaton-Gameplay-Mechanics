@@ -24,4 +24,12 @@ public class Game : MonoBehaviour
             automaton.NextTick();
         }
     }
+
+    public void TouchedCell(CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Canceled)
+        {
+            automaton.OnTouchedCell();
+        }
+    }
 }

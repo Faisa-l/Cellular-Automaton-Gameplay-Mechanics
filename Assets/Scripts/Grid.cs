@@ -80,6 +80,7 @@ public struct Grid
     }
 
     // Get the neighbourhood of the cell index.
+    // Possible change: Return int[] of neighbourhood indexes
     private readonly Cell[] GetCellNeighbourhood(int index)
     {
         // CURRENTLY ONLY SUPPORTS NEIGHBOURHOOD SIZE OF 1
@@ -171,4 +172,22 @@ public struct Grid
         Array.Copy(cells, pointer, arr, 0, Columns);
         return arr;
     }
+
+    /// <summary>
+    /// Returns the index for a cell at a given row and column.
+    /// </summary>
+    /// <param name="row">Row of cell.</param>
+    /// <param name="column">Column of cell.</param>
+    /// <param name="index">Output index of the cell.</param>
+    /// <returns>Whether the cell exists.</returns>
+    public readonly bool TryGetCellIndex(int row, int column, out int index)
+    {
+        // Row and column must be in range
+        bool valid = row >= 0 && Rows > row && column >= 0 && Columns > column;
+        index = valid ? (row * Columns) + column : -1;
+
+        return valid;
+    }
+
+    public readonly void UpdateCellState(int index, CellState state) => cells[index].state = state;
 }

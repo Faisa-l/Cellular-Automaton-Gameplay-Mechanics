@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using UnityEngine.InputSystem;
 using static FunctionLibrary;
 
 /// <summary>
@@ -45,6 +45,33 @@ public class CellularAutomaton : MonoBehaviour
     {
         grid.Update();
         visualiser.UpdateVisualisation();
+    }
+
+    // For input call
+    public void OnTouchedCell()
+    {
+        // Get a ray from the mouse to the XZ plane.
+
+        Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
+        
+        if (visualiser.TryGetTouchedCellIndex(ray, out int index))
+        {
+            ToggleCellLiving(index);
+            visualiser.UpdateVisualisation();
+        }
+
+    }
+
+    private void ToggleCellLiving(int index)
+    {
+        if (grid[index].state == CellState.Alive)
+        {
+            grid.UpdateCellState(index, CellState.Dead);
+        }
+        else if (grid[index].state == CellState.Dead)
+        {
+            grid.UpdateCellState(index, CellState.Alive);
+        }
     }
 
 }
