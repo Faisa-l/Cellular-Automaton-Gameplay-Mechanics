@@ -41,7 +41,7 @@ public struct Grid
         cells = new Cell[Size];
         for (int i = 0; i <= Size - 1; i++)
         {
-            cells[i].state = CellState.Alive;
+            cells[i].state = CellState.Dead;
         }
 
         neighbourhoodSize = nSize;
@@ -55,7 +55,7 @@ public struct Grid
     // Update the state of cell i based on its neighbourhood
     readonly CellState UpdateCell(int i, Cell[] neighbourhood)
     {
-        CellState outState = cells[i].state;
+        CellState outState = cells[i].state; 
 
         // Call a function to use here
         outState = function(cells[i], neighbourhood);
@@ -87,7 +87,7 @@ public struct Grid
         // Using a lazy method: Combine neighbours of the individual rows above-below and this.
         Cell[] neighbourhood = new Cell[4 * neighbourhoodSize * (neighbourhoodSize + 1)];
         int pointer = 0;
-        GetRowColumn(index, out int row, out int _);
+        GetRowColumn(index, out int row, out _);
 
         // Check rows above and below
         for (int i = 1; i < neighbourhoodSize + 1; i++)
@@ -132,12 +132,16 @@ public struct Grid
         int p = 0;
         for (int i = 1; i < neighbourhoodSize + 1; i++)
         {
-            if (index - i > (Rows * Columns) - Columns)
+            GetRowColumn(index, out int row, out _);
+
+            // Left of
+            if (index - i >= ((row - 1) * Columns) + Columns)
             {
                 neighbours[p] = cells[index - i];
                 p++;
             }
-            if (index + i < Rows * Columns)
+            // Right of 
+            if (index + i < (row * Columns) + Columns)
             {
                 neighbours[p] = cells[index + i];
                 p++;

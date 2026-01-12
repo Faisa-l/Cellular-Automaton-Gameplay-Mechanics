@@ -150,8 +150,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 7790273893292421316, guid: 1b4ee666d235cf841b1c7772e22de35a, type: 3}
-  rows: 6
-  columns: 8
+  rows: 12
+  columns: 12
   neighbourhoodSize: 1
   initialState:
   - state: 1
@@ -159,7 +159,7 @@ MonoBehaviour:
   - state: 0
   - state: 1
   - state: 1
-  functionName: 0
+  functionName: 2
 --- !u!4 &199781311
 Transform:
   m_ObjectHideFlags: 0
@@ -189,9 +189,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colorMap:
   - state: 0
-    color: {r: 1, g: 1, b: 1, a: 0}
-  - state: 1
     color: {r: 0, g: 0, b: 0, a: 0}
+  - state: 1
+    color: {r: 1, g: 1, b: 1, a: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
