@@ -1,13 +1,21 @@
+using AOT;
+using Unity.Burst;
+using Unity.Collections;
+
 /// <summary>
 /// Holds all the types of functions you could use in a Grid's UpdateCell call.
 /// </summary>
+[BurstCompile(CompileSynchronously = true)]
 public static class FunctionLibrary
 {
     // All functions will return the cell state for the given cell
-    public delegate CellState Function(Cell target, Cell[] neighbourhood);
+    public delegate CellState Function(int index, in Grid grid);
     public enum FunctionName { SwitchState , InheritNeighbourSingular , GameOfLife}
 
     static Function[] functions = { SwitchState , InheritNeighbourSingular , GameOfLife};
+
+    // Grid the functions will work in reference to
+    public static Grid grid;
 
     /// <summary>
     /// Return the function callback for a grid function.
@@ -22,9 +30,11 @@ public static class FunctionLibrary
     /// <summary>
     /// Switches the state of the target cell to the opposite state.
     /// </summary>
-    public static CellState SwitchState(Cell target, Cell[] neighbourhood)
+    [BurstCompile(CompileSynchronously = true)]
+    [MonoPInvokeCallback(typeof(Function))]
+    public static CellState SwitchState(int index, in Grid grid)
     {
-        CellState outState = target.state == CellState.Dead ? CellState.Alive : CellState.Dead;
+        CellState outState = grid[index].state == CellState.Dead ? CellState.Alive : CellState.Dead;
 
         return outState;
     }
@@ -34,16 +44,19 @@ public static class FunctionLibrary
     /// </summary>
     /// <param name="target"></param>
     /// <param name="neighbourhood"></param>
-    public static CellState InheritNeighbourSingular(Cell target, Cell[] neighbourhood)
+    [BurstCompile(CompileSynchronously = true)]
+    [MonoPInvokeCallback(typeof(Function))]
+    public static CellState InheritNeighbourSingular(int index, in Grid grid)
     {
-        int i = 0;
+        int j = 0;
     
-        foreach (var cell in neighbourhood)
+        /* To remove
+        foreach (var i in neighbourhood)
         {
-            if (cell.state == CellState.Alive) i++;
-        }
+            if (grid[i].state == CellState.Alive) j++;
+        }*/
 
-        return i == 1 ? CellState.Alive : CellState.Dead;
+        return j == 1 ? CellState.Alive : CellState.Dead;
     }
 
     /// <summary>
@@ -51,18 +64,24 @@ public static class FunctionLibrary
     /// </summary>
     /// <param name="target"></param>
     /// <param name="neighbourhood"></param>
-    public static CellState GameOfLife(Cell target, Cell[] neighbourhood)
+    [BurstCompile(CompileSynchronously = true)]
+    [MonoPInvokeCallback(typeof(Function))]
+    public static CellState GameOfLife(int index, in Grid grid)
     {
         int count = 0;
 
-        foreach (var cell in neighbourhood)
+        for (int i = 0; i < grid.NeighbourhoodLength + 1; i++)
         {
-            if (cell.state == CellState.Alive) count++;
+            grid.TryGetNeighbourhoodCellIndex(index, i, out int neighbour);
+            if (neighbour != -1 && neighbour != index)
+            {
+                count = (grid[neighbour].state == CellState.Alive) ? count + 1 : count;
+            }
         }
 
-        if (target.state == CellState.Alive)
+        if (grid[index].state == CellState.Alive)
         {
-            return count == 2 || count == 3 ? CellState.Alive : CellState.Dead ;
+            return count == 2 || count == 3 ? CellState.Alive : CellState.Dead;
         }
         else
         { 

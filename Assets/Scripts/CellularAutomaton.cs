@@ -20,13 +20,15 @@ public class CellularAutomaton : MonoBehaviour
     int neighbourhoodSize;
 
     [SerializeField]
-    Cell[] initialState;
-
-    [SerializeField]
     FunctionName functionName;
 
     Grid grid;
     GridVisualiser visualiser;
+
+    private void OnDisable()
+    {
+        grid.Dispose();
+    }
 
     public void Initialise()
     {
@@ -36,7 +38,7 @@ public class CellularAutomaton : MonoBehaviour
             visualiser = gameObject.AddComponent<GridVisualiser>();
         }
 
-        grid.Initialise(rows, columns, initialState, functionName, neighbourhoodSize);
+        grid.Initialise(rows, columns, functionName, neighbourhoodSize);
         visualiser.Initialise(cellPrefab, grid);
         visualiser.Draw();
     }
