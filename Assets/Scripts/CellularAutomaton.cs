@@ -25,11 +25,18 @@ public class CellularAutomaton : MonoBehaviour
     [SerializeField]
     FunctionName functionName;
 
+    [SerializeField, Min(0)]
+    int updatesPerSecond = 24;
+
     Grid grid;
     GridVisualiser visualiser;
+    bool updateEachFrame;
+
+    float UpdateRepeatRate => 1 / (float)updatesPerSecond;
 
     public void Initialise()
     {
+        updateEachFrame = false;
         grid = new Grid();
         if (!TryGetComponent(out visualiser))
         {
@@ -51,7 +58,6 @@ public class CellularAutomaton : MonoBehaviour
     public void OnTouchedCell()
     {
         // Get a ray from the mouse to the XZ plane.
-
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         
         if (visualiser.TryGetTouchedCellIndex(ray, out int index))
@@ -74,4 +80,17 @@ public class CellularAutomaton : MonoBehaviour
         }
     }
 
+    public void ToggleRepeatingUpdate()
+    {
+        if (!updateEachFrame)
+        {
+            updateEachFrame = true;
+            InvokeRepeating(nameof(NextTick), 0f, UpdateRepeatRate);
+        }
+        else
+        {
+            updateEachFrame = false;
+            CancelInvoke(nameof(NextTick));
+        }
+    }
 }

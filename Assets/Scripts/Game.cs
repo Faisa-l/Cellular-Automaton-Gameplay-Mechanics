@@ -32,4 +32,12 @@ public class Game : MonoBehaviour
             automaton.OnTouchedCell();
         }
     }
+
+    public void ToggleAutomatonRunning(CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Canceled)
+        {
+            automaton.ToggleRepeatingUpdate();
+        }
+    }
 }
