@@ -154,6 +154,7 @@ MonoBehaviour:
   columns: 12
   neighbourhoodSize: 1
   functionName: 2
+  updatesPerSecond: 24
 --- !u!4 &199781311
 Transform:
   m_ObjectHideFlags: 0
@@ -598,6 +599,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: 11b13b35-39f3-489e-841c-853177d8fe4d
     m_ActionName: 'Game/MoveCamera[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 913602473}
+        m_TargetAssemblyTypeName: Game, Assembly-CSharp
+        m_MethodName: ToggleAutomatonRunning
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: bbed6773-22b5-42fe-8127-cb735535be7e
+    m_ActionName: 'Game/ToggleAutomatonRunning[/Keyboard/q]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard + Mouse
   m_DefaultActionMap: Game
