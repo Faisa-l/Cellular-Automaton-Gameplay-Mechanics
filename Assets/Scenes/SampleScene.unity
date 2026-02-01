@@ -153,12 +153,6 @@ MonoBehaviour:
   rows: 12
   columns: 12
   neighbourhoodSize: 1
-  initialState:
-  - state: 1
-  - state: 1
-  - state: 0
-  - state: 1
-  - state: 1
   functionName: 2
 --- !u!4 &199781311
 Transform:

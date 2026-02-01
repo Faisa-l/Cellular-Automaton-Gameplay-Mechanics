@@ -20,9 +20,6 @@ public class CellularAutomaton : MonoBehaviour
     int neighbourhoodSize;
 
     [SerializeField]
-    Cell[] initialState;
-
-    [SerializeField]
     FunctionName functionName;
 
     [SerializeField, Min(0)]
@@ -34,6 +31,11 @@ public class CellularAutomaton : MonoBehaviour
 
     float UpdateRepeatRate => 1 / (float)updatesPerSecond;
 
+    private void OnDisable()
+    {
+        grid.Dispose();
+    }
+
     public void Initialise()
     {
         updateEachFrame = false;
@@ -43,7 +45,7 @@ public class CellularAutomaton : MonoBehaviour
             visualiser = gameObject.AddComponent<GridVisualiser>();
         }
 
-        grid.Initialise(rows, columns, initialState, functionName, neighbourhoodSize);
+        grid.Initialise(rows, columns, functionName, neighbourhoodSize);
         visualiser.Initialise(cellPrefab, grid);
         visualiser.Draw();
     }
