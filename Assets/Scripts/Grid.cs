@@ -15,6 +15,7 @@ public struct Grid
     FunctionName functionName;
 
     // Function function;
+    FunctionPointer<Function> function;
 
     public int Rows { get; private set; }
     public int Columns { get; private set; }
@@ -50,7 +51,7 @@ public struct Grid
 
         neighbourhoodSize = nSize;
         functionName = funcName;
-        // function = GetFunction(functionName);
+        function = BurstCompiler.CompileFunctionPointer(GetFunction(functionName));
     }
 
     // Unload the grid
@@ -64,7 +65,7 @@ public struct Grid
         UpdateGridJob updateJob = new()
         {
             grid = this,
-            cellFunction = BurstCompiler.CompileFunctionPointer(GetFunction(functionName)),
+            cellFunction = function,
             outCells = newCells
         };
 
@@ -93,28 +94,19 @@ public struct Grid
     public readonly bool TryGetNeighbourhoodCellIndex(int index, int neighbourhoodIndex, out int neighbour)
     {
         // Effectively converting the local neighbourhood grid around the index cell to the global grid
-        neighbour = -1;
         GetRowColumn(index, out int targetRow, out int targetCol);
 
-        // Get local row-column of the neighbourhood index cell
+        // Get local row-column indexes of the neighbourhood index cell
         int span = (int)Math.Sqrt((float)NeighbourhoodLength + 1);
         int neighbourRow = neighbourhoodIndex / span;
         int neighbourCol = neighbourhoodIndex % span;
 
-        // Copnvert local row-column to global space from pivot
+        // Convert local indexes to global space
         targetRow += neighbourRow - neighbourhoodSize;
         targetCol += neighbourCol - neighbourhoodSize;
 
         // Update neighbour with new indexes
-        if (TryGetCellIndex(targetRow, targetCol, out int t))
-        {
-            neighbour = t;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return TryGetCellIndex(targetRow, targetCol, out neighbour);
     }
 
     /// <summary>
