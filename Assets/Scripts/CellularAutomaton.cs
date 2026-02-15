@@ -25,35 +25,39 @@ public class CellularAutomaton : MonoBehaviour
     [SerializeField, Min(0)]
     int updatesPerSecond = 24;
 
-    Grid grid;
-    GridVisualiser visualiser;
+    public Grid Grid { get; private set; }
+    public GridVisualiser Visualiser { get; private set; }
     bool updateEachFrame;
 
     float UpdateRepeatRate => 1 / (float)updatesPerSecond;
 
     private void OnDisable()
     {
-        grid.Dispose();
+        Grid.Dispose();
     }
 
     public void Initialise()
     {
         updateEachFrame = false;
-        grid = new Grid();
-        if (!TryGetComponent(out visualiser))
+        Grid = new Grid();
+        if (!TryGetComponent(out GridVisualiser v))
         {
-            visualiser = gameObject.AddComponent<GridVisualiser>();
+            Visualiser = gameObject.AddComponent<GridVisualiser>();
+        }
+        else
+        {
+            Visualiser = v;
         }
 
-        grid.Initialise(rows, columns, functionName, neighbourhoodSize);
-        visualiser.Initialise(cellPrefab, grid);
-        visualiser.Draw();
+        Grid.Initialise(rows, columns, functionName, neighbourhoodSize);
+        Visualiser.Initialise(cellPrefab, Grid);
+        Visualiser.Draw();
     }
 
     public void NextTick()
     {
-        grid.Update();
-        visualiser.UpdateVisualisation();
+        Grid.Update();
+        Visualiser.UpdateVisualisation();
     }
 
     // For input call
@@ -62,23 +66,23 @@ public class CellularAutomaton : MonoBehaviour
         // Get a ray from the mouse to the XZ plane.
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         
-        if (visualiser.TryGetTouchedCellIndex(ray, out int index))
+        if (Visualiser.TryGetTouchedCellIndex(ray, out int index))
         {
             ToggleCellLiving(index);
-            visualiser.UpdateVisualisation();
+            Visualiser.UpdateVisualisation();
         }
 
     }
 
     private void ToggleCellLiving(int index)
     {
-        if (grid[index].state == CellState.Alive)
+        if (Grid[index].state == CellState.Alive)
         {
-            grid.UpdateCellState(index, CellState.Dead);
+            Grid.UpdateCellState(index, CellState.Dead);
         }
-        else if (grid[index].state == CellState.Dead)
+        else if (Grid[index].state == CellState.Dead)
         {
-            grid.UpdateCellState(index, CellState.Alive);
+            Grid.UpdateCellState(index, CellState.Alive);
         }
     }
 
