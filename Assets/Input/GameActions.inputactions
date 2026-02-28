@@ -40,6 +40,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "PerformEvaluation",
+                    "type": "Button",
+                    "id": "a15b416f-af6b-4fa2-ad59-51f7a8a98d34",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -128,6 +137,17 @@
                     "processors": "",
                     "groups": ";Keyboard + Mouse",
                     "action": "ToggleAutomatonRunning",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "372dbfcb-51c5-4f29-8d15-188b360db070",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard + Mouse",
+                    "action": "PerformEvaluation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

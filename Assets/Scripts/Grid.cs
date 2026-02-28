@@ -9,12 +9,13 @@ using static FunctionLibrary;
 /// </summary>
 public struct Grid
 {
-    // All the cells actually live here
+    // Cells live in Grid.cells. Each cell holds its own data.
+    // Data is an array of floats. Each index maps to data described in DataMap.
+    // NOTE: neighbourhoodSize refers to how many cells left/right are in the neighbourhood
+
     NativeArray<Cell> cells;
     int neighbourhoodSize;
     FunctionName functionName;
-
-    // Function function;
     FunctionPointer<Function> function;
 
     public int Rows { get; private set; }
@@ -23,7 +24,6 @@ public struct Grid
     public readonly int NeighbourhoodLength => 4 * neighbourhoodSize * (neighbourhoodSize + 1);
     public void UpdateCellState(int index, CellState state) => cells[index] = new Cell { state = state };
 
-    // NOTE: neighbourhoodSize refers to how many cells left/right are in the neighbourhood
 
     // Reference the cells by calling the grid as an array
     public Cell this [int index]
@@ -39,14 +39,15 @@ public struct Grid
     /// <param name="columns"> Length of each row. </param>
     /// <param name="funcName"> Function name to perform on the neighbourhood. </param>
     /// <param name="nSize"> Size of the neighbourhood, measured as the distance from a given cell. </param>
-    public void Initialise(int rows, int columns, FunctionName funcName, int nSize = 1)
+    public void Initialise(int rows, int columns, FunctionName funcName, Cell defaultCell, int nSize = 1)
     {
         Rows = rows;
         Columns = columns;
+        
         cells = new NativeArray<Cell>(Size, Allocator.Persistent);
         for (int i = 0; i <= Size - 1; i++)
         {
-            cells[i] = new Cell { state = CellState.Dead };
+            cells[i] = defaultCell; 
         }
 
         neighbourhoodSize = nSize;
@@ -65,8 +66,8 @@ public struct Grid
         UpdateGridJob updateJob = new()
         {
             grid = this,
-            cellFunction = function,
-            outCells = newCells
+            updateFunction = function,
+            output = newCells
         };
 
         // Test different batch counts: rows, 1, 32, etc.

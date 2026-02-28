@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 199781311}
   - component: {fileID: 199781310}
   - component: {fileID: 199781312}
+  - component: {fileID: 199781313}
   m_Layer: 0
   m_Name: Cellular Automaton
   m_TagString: Untagged
@@ -153,8 +154,12 @@ MonoBehaviour:
   rows: 12
   columns: 12
   neighbourhoodSize: 1
-  functionName: 2
+  functionName: 3
   updatesPerSecond: 24
+  cell:
+    state: 1
+    health: 0
+    healthDecayStack: 0
 --- !u!4 &199781311
 Transform:
   m_ObjectHideFlags: 0
@@ -187,6 +192,21 @@ MonoBehaviour:
     color: {r: 0, g: 0, b: 0, a: 0}
   - state: 1
     color: {r: 1, g: 1, b: 1, a: 0}
+--- !u!114 &199781313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199781309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e987159f87703694a8b8db6bbe2b83fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cellularAutomaton: {fileID: 0}
+  EvaluationValue: 
+  mode: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0

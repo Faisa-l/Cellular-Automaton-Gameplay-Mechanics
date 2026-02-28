@@ -25,39 +25,48 @@ public class CellularAutomaton : MonoBehaviour
     [SerializeField, Min(0)]
     int updatesPerSecond = 24;
 
-    public Grid Grid { get; private set; }
-    public GridVisualiser Visualiser { get; private set; }
+    [Header("Cells to add")]
+    [SerializeField]
+    Cell startingCell;
+
+    [SerializeField]
+    Cell paintedCell;
+
+    Grid grid;
+    GridVisualiser visualiser;
     bool updateEachFrame;
+
+    public ref readonly Grid Grid => ref grid;
 
     float UpdateRepeatRate => 1 / (float)updatesPerSecond;
 
     private void OnDisable()
     {
-        Grid.Dispose();
+        grid.Dispose();
     }
 
     public void Initialise()
     {
         updateEachFrame = false;
-        Grid = new Grid();
+        grid = new Grid();
         if (!TryGetComponent(out GridVisualiser v))
         {
-            Visualiser = gameObject.AddComponent<GridVisualiser>();
+            visualiser = gameObject.AddComponent<GridVisualiser>();
         }
         else
         {
-            Visualiser = v;
+            visualiser = v;
         }
 
-        Grid.Initialise(rows, columns, functionName, neighbourhoodSize);
-        Visualiser.Initialise(cellPrefab, Grid);
-        Visualiser.Draw();
+        grid.Initialise(rows, columns, functionName, startingCell, neighbourhoodSize);
+        visualiser.Initialise(cellPrefab, grid);
+        visualiser.Draw();
     }
 
     public void NextTick()
     {
-        Grid.Update();
-        Visualiser.UpdateVisualisation();
+        grid.Update();
+        visualiser.UpdateVisualisation();
     }
 
     // For input call
@@ -66,24 +75,17 @@ public class CellularAutomaton : MonoBehaviour
         // Get a ray from the mouse to the XZ plane.
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         
-        if (Visualiser.TryGetTouchedCellIndex(ray, out int index))
+        if (visualiser.TryGetTouchedCellIndex(ray, out int index))
         {
-            ToggleCellLiving(index);
-            Visualiser.UpdateVisualisation();
+            OverrideCell(index);
+            visualiser.UpdateVisualisation();
         }
 
     }
 
-    private void ToggleCellLiving(int index)
+    private void OverrideCell(int index)
     {
-        if (Grid[index].state == CellState.Alive)
-        {
-            Grid.UpdateCellState(index, CellState.Dead);
-        }
-        else if (Grid[index].state == CellState.Dead)
-        {
-            Grid.UpdateCellState(index, CellState.Alive);
-        }
+        grid[index] = paintedCell;
     }
 
     public void ToggleRepeatingUpdate()

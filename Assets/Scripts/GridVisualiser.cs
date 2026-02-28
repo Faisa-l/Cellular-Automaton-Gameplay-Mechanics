@@ -67,6 +67,7 @@ public class GridVisualiser : MonoBehaviour
         var obj = drawnObjects[i];
         var renderer = obj.GetComponent<Renderer>();
         colorPairs.TryGetValue(grid[i].state, out var color);
+        color.a = Mathf.Clamp(grid[i].health / 10f, 0f, 1f);
 
         renderer.GetPropertyBlock(block);
         block.SetColor("_BaseColor", color);

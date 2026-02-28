@@ -11,6 +11,9 @@ public class Game : MonoBehaviour
     [SerializeField]
     CellularAutomaton automaton;
 
+    [SerializeField]
+    HealthEvaluation healthEvaluation;
+
     private void Awake()
     {
         automaton.Initialise();
@@ -38,6 +41,14 @@ public class Game : MonoBehaviour
         if (context.phase == InputActionPhase.Canceled)
         {
             automaton.ToggleRepeatingUpdate();
+        }
+    }
+
+    public void PerformEvaluation(CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Canceled)
+        {
+            healthEvaluation.Evaluate();
         }
     }
 }

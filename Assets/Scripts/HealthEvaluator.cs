@@ -1,18 +1,14 @@
-using System;
 using UnityEngine;
 
 /// <summary>
 /// Evaluates a given CellularAutomaton to equate to health.
 /// </summary>
-public class HealthEvaluation : MonoBehaviour
+public class HealthEvaluation : MonoBehaviour, IEvaluator
 {
     public enum EvaluationType { IsAlive, RawCount, ValueCount }
     
     [SerializeField]
     CellularAutomaton cellularAutomaton;
-
-    [SerializeField, Tooltip("Name of value in the cell to evaluate.")]
-    string EvaluationValue = string.Empty;
 
     [SerializeField, Tooltip("Method of evaluating the cell's value.")]
     EvaluationType mode = EvaluationType.RawCount;
@@ -20,7 +16,7 @@ public class HealthEvaluation : MonoBehaviour
     /// <summary>
     /// Result of the evaluation, recalculated after calling Evaluate().
     /// </summary>
-    public float Evaluation { get; private set; }
+    public float Evaluation { get; set; }
 
     public void Initialise()
     {
@@ -32,7 +28,7 @@ public class HealthEvaluation : MonoBehaviour
     }
 
     // Evaluates the cellular automaton to a single value. Result is stored in Evaluation.
-    void Evaluate()
+    public void Evaluate()
     {
         Grid grid = cellularAutomaton.Grid;
 
@@ -49,7 +45,7 @@ public class HealthEvaluation : MonoBehaviour
                         count++;
                         break;
                     case EvaluationType.ValueCount:
-                        count++;
+                        count += cell.health;
                         break;
                     case EvaluationType.IsAlive:
                         count++;
@@ -61,5 +57,15 @@ public class HealthEvaluation : MonoBehaviour
             }
         }
         Evaluation = count;
+        Debug.Log($"Health: {Evaluation}");
     }
+}
+
+/// <summary>
+/// Handles evaluating a cellular automaton.
+/// </summary>
+public interface IEvaluator
+{
+    public float Evaluation { get; set; }
+    public void Evaluate();
 }
