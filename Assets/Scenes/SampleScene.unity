@@ -156,10 +156,14 @@ MonoBehaviour:
   neighbourhoodSize: 1
   functionName: 3
   updatesPerSecond: 24
-  cell:
+  startingCell:
     state: 1
-    health: 0
+    health: 10
     healthDecayStack: 0
+  paintedCell:
+    state: 0
+    health: 10
+    healthDecayStack: 3
 --- !u!4 &199781311
 Transform:
   m_ObjectHideFlags: 0
@@ -204,9 +208,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e987159f87703694a8b8db6bbe2b83fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellularAutomaton: {fileID: 0}
-  EvaluationValue: 
-  mode: 0
+  cellularAutomaton: {fileID: 199781310}
+  mode: 2
+  minimumHealthThreshold: 0
+  maximumHealthThreshold: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,6 +640,22 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: bbed6773-22b5-42fe-8127-cb735535be7e
     m_ActionName: 'Game/ToggleAutomatonRunning[/Keyboard/q]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 913602473}
+        m_TargetAssemblyTypeName: Game, Assembly-CSharp
+        m_MethodName: PerformEvaluation
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: a15b416f-af6b-4fa2-ad59-51f7a8a98d34
+    m_ActionName: 'Game/PerformEvaluation[/Keyboard/e]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Keyboard + Mouse
   m_DefaultActionMap: Game
@@ -653,6 +674,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   automaton: {fileID: 199781310}
+  healthEvaluation: {fileID: 199781313}
 --- !u!4 &913602474
 Transform:
   m_ObjectHideFlags: 0

@@ -36,9 +36,10 @@ public class CellularAutomaton : MonoBehaviour
     GridVisualiser visualiser;
     bool updateEachFrame;
 
-    public ref readonly Grid Grid => ref grid;
+    public ref Grid Grid => ref grid;
+    float UpdateRepeatRate => 1f / updatesPerSecond;
+    public void UpdateVisualisation() => visualiser.UpdateVisualisation();
 
-    float UpdateRepeatRate => 1 / (float)updatesPerSecond;
 
     private void OnDisable()
     {

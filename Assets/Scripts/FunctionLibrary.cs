@@ -1,8 +1,11 @@
 using AOT;
 using Unity.Burst;
+using Unity.Mathematics;
 
 /// <summary>
-/// Holds all the types of functions you could use in a Grid's UpdateCell call.
+/// Holds all the types of functions you could use in a <see cref="Grid.Update"/> call.
+/// Each function is to be handled as a function pointer to be called in the <see cref="UpdateGridJob"/>.
+/// Generally, the functions will only do work so long as the cell it's working on is alive.
 /// </summary>
 [BurstCompile(CompileSynchronously = true)]
 public static class FunctionLibrary
@@ -85,7 +88,7 @@ public static class FunctionLibrary
     }
 
     /// <summary>
-    /// Reduces the health for the cell index for each neighbour with a healthDecayStack. Also decrement that value for this cell.
+    /// Reduces the health for the cell index for each neighbour with a <see cref="Cell.healthDecayStack"/>. Also decrement that value for this cell.
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
@@ -98,7 +101,10 @@ public static class FunctionLibrary
         {
             if (grid.TryGetNeighbourhoodCellIndex(index, i, out int neighbour) && neighbour != index)
             {
-                if (grid[neighbour].healthDecayStack > 0) output.health--;
+                if (grid[neighbour].healthDecayStack > 0)
+                { 
+                    output.health = math.max(0f, output.health - 1f);
+                }
             }
         }
     }
