@@ -1,0 +1,114 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7936662892810769553
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 116168795212534319}
+  - component: {fileID: 1677875749852789630}
+  - component: {fileID: 3132262276549282075}
+  - component: {fileID: 3322836224305243910}
+  - component: {fileID: 4012554336459122775}
+  m_Layer: 0
+  m_Name: Game Entity
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &116168795212534319
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7936662892810769553}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -2.431}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1677875749852789630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7936662892810769553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0692ab90052d924e9d03d28277ef595, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cellPrefab: {fileID: 7790273893292421316, guid: 1b4ee666d235cf841b1c7772e22de35a, type: 3}
+  rows: 3
+  columns: 3
+  neighbourhoodSize: 1
+  functionName: 3
+  updatesPerSecond: 24
+  startingCell:
+    state: 1
+    health: 5
+    healthDecayStack: 0
+    damage: 0
+  paintedCell:
+    state: 0
+    health: 0
+    healthDecayStack: 0
+    damage: 0
+--- !u!114 &3132262276549282075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7936662892810769553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 614c7785f6c964541b9adff7d7401651, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthEvaluation: {fileID: 3322836224305243910}
+  entityAutomaton: {fileID: 1677875749852789630}
+  baseAutomaton: {fileID: 0}
+  healthObject: {fileID: 11400000, guid: cec5caab97f59194e8541a4478ede219, type: 2}
+--- !u!114 &3322836224305243910
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7936662892810769553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e987159f87703694a8b8db6bbe2b83fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cellularAutomaton: {fileID: 1677875749852789630}
+  mode: 2
+  minimumHealthThreshold: 0
+  maximumHealthThreshold: 0
+--- !u!114 &4012554336459122775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7936662892810769553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f907c5c8cb4638449827ec0f4b80284, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colorMap:
+  - state: 0
+    color: {r: 0, g: 0, b: 0, a: 0}
+  - state: 1
+    color: {r: 1, g: 1, b: 1, a: 0}

@@ -14,8 +14,12 @@ public struct Cell
 
     // All types of cell data
     public float
-        health,
-        healthDecayStack;
+        health,                 // Health of a cell.
+        healthDecayStack,       // If the cell reduces the health of its neighbours.
+        damage,                 // Damage the cell can deal to others (health damage).
+        appliedDecayStack,
+        decayDamage;
+
 }
 
 

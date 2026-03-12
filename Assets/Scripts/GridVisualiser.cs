@@ -44,7 +44,7 @@ public class GridVisualiser : MonoBehaviour
         {
             grid.GetRowColumn(i, out int row, out int column);
             Vector3 position = new(row, 0, column);
-            GameObject obj = Instantiate(prefab);
+            GameObject obj = Instantiate(prefab, transform);
 
             obj.transform.localPosition = position;
             drawnObjects[i] = obj;
@@ -74,6 +74,11 @@ public class GridVisualiser : MonoBehaviour
         renderer.SetPropertyBlock(block);
     }
 
+    /// <summary>
+    /// Returns a the cell which intersects a ray.
+    /// </summary>
+    /// <param name="ray">Ray to query a cell's position.</param>
+    /// <param name="index">Output index of the cell.</param>
     public bool TryGetTouchedCellIndex(Ray ray, out int index)
     {
         // Where ray intersects the xz plane
@@ -83,6 +88,20 @@ public class GridVisualiser : MonoBehaviour
         int column = Mathf.RoundToInt(intersection.z);
 
         return grid.TryGetCellIndex(row, column, out index);
+    }
+
+    /// <summary>
+    /// Returns the world space position of the cell at index.
+    /// </summary>
+    /// <param name="index">Index of the cell.</param>
+    /// <param name="position">Output position of the cell's world space position.</param>
+    /// <returns></returns>
+    public bool TryGetCellPosition(int index, out Vector3 position)
+    {
+        position = Vector3.zero;
+        if (index < 0 || index > drawnObjects.Length) return false;
+        position = drawnObjects[index].transform.position;
+        return true;
     }
 }
 

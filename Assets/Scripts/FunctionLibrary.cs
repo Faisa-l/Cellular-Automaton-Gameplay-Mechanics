@@ -87,6 +87,8 @@ public static class FunctionLibrary
         }
     }
 
+    // Possibly need to make change in output.health - 1f -> recalculate 1f 
+
     /// <summary>
     /// Reduces the health for the cell index for each neighbour with a <see cref="Cell.healthDecayStack"/>. Also decrement that value for this cell.
     /// </summary>
@@ -95,7 +97,7 @@ public static class FunctionLibrary
     public static void ProcessHealthDecay(int index, in Grid grid, out Cell output)
     {
         output = grid[index];
-        output.healthDecayStack--;
+        output.healthDecayStack = math.max(0f, output.healthDecayStack - 1f);
 
         for (int i = 0; i < grid.NeighbourhoodLength + 1; i++)
         {
@@ -103,7 +105,7 @@ public static class FunctionLibrary
             {
                 if (grid[neighbour].healthDecayStack > 0)
                 { 
-                    output.health = math.max(0f, output.health - 1f);
+                    output.health = math.max(0f, output.health - grid[neighbour].decayDamage);
                 }
             }
         }

@@ -16,7 +16,7 @@ public class Game : MonoBehaviour
 
     private void Awake()
     {
-        automaton.Initialise();
+
     }
 
     // Bind to an event to proceed the tick of the automaton

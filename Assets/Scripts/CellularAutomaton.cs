@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static FunctionLibrary;
@@ -25,6 +26,9 @@ public class CellularAutomaton : MonoBehaviour
     [SerializeField, Min(0)]
     int updatesPerSecond = 24;
 
+    [SerializeField]
+    bool repeatingUpdate;
+
     [Header("Cells to add")]
     [SerializeField]
     Cell startingCell;
@@ -33,22 +37,41 @@ public class CellularAutomaton : MonoBehaviour
     Cell paintedCell;
 
     Grid grid;
+    bool updateEachFrame = false;
     GridVisualiser visualiser;
-    bool updateEachFrame;
 
-    public ref Grid Grid => ref grid;
+    public event Action OnUpdate;
+    public GridVisualiser Visuasliser => visualiser;
+    public ref Grid Grid => ref GetGrid();
     float UpdateRepeatRate => 1f / updatesPerSecond;
-    public void UpdateVisualisation() => visualiser.UpdateVisualisation();
 
+    ref Grid GetGrid() => ref grid;
+
+    private void Start()
+    {
+        Initialise();
+    }
+
+    private void OnEnable()
+    {
+        if (repeatingUpdate)
+        {
+            InvokeRepeating(nameof(NextTick), 0f, UpdateRepeatRate);
+        }
+    }
 
     private void OnDisable()
     {
         grid.Dispose();
+
+        if (repeatingUpdate)
+        {
+            CancelInvoke(nameof(NextTick));
+        }
     }
 
     public void Initialise()
     {
-        updateEachFrame = false;
         grid = new Grid();
         if (!TryGetComponent(out GridVisualiser v))
         {
@@ -64,8 +87,10 @@ public class CellularAutomaton : MonoBehaviour
         visualiser.Draw();
     }
 
+
     public void NextTick()
     {
+        OnUpdate?.Invoke();
         grid.Update();
         visualiser.UpdateVisualisation();
     }
@@ -78,15 +103,15 @@ public class CellularAutomaton : MonoBehaviour
         
         if (visualiser.TryGetTouchedCellIndex(ray, out int index))
         {
-            OverrideCell(index);
-            visualiser.UpdateVisualisation();
+            OverrideCell(index, paintedCell);
         }
 
     }
 
-    private void OverrideCell(int index)
+    public void OverrideCell(int index, Cell newCell)
     {
-        grid[index] = paintedCell;
+        grid[index] = newCell;
+        visualiser.UpdateVisualisation();
     }
 
     public void ToggleRepeatingUpdate()
@@ -101,5 +126,18 @@ public class CellularAutomaton : MonoBehaviour
             updateEachFrame = false;
             CancelInvoke(nameof(NextTick));
         }
+    }
+
+    /// <summary>
+    /// Converts the index of a cell in a base automaton to the index of the cell in another automaton, based on the world-space position of the cells.
+    /// </summary>
+    /// <param name="targetAutomaton">Automaton of the converted cell index.</param>
+    /// <param name="baseIndex">Cell index of the base automaton to convert.</param>
+    /// <param name="projectedIndex">The converted index of baseIndex in the target automaton.</param>
+    public bool TryProjectCellOntoOtherAutomaton(CellularAutomaton targetAutomaton, int baseIndex, out int projectedIndex)
+    {
+        projectedIndex = -1;
+        if (!visualiser.TryGetCellPosition(baseIndex, out var position)) return false;
+        return targetAutomaton.visualiser.TryGetTouchedCellIndex(new Ray(position + (Vector3.up * 2f), Vector3.down), out projectedIndex);
     }
 }
