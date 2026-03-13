@@ -1,18 +1,20 @@
 using AOT;
 using Unity.Burst;
-using Unity.Collections;
+using Unity.Mathematics;
 
 /// <summary>
-/// Holds all the types of functions you could use in a Grid's UpdateCell call.
+/// Holds all the types of functions you could use in a <see cref="Grid.Update"/> call.
+/// Each function is to be handled as a function pointer to be called in the <see cref="UpdateGridJob"/>.
+/// Generally, the functions will only do work so long as the cell it's working on is alive.
 /// </summary>
 [BurstCompile(CompileSynchronously = true)]
 public static class FunctionLibrary
 {
     // All functions will return the cell state for the given cell
-    public delegate CellState Function(int index, in Grid grid);
-    public enum FunctionName { SwitchState , InheritNeighbourSingular , GameOfLife}
+    public delegate void Function(int index, in Grid grid, out Cell output);
+    public enum FunctionName { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay}
 
-    static Function[] functions = { SwitchState , InheritNeighbourSingular , GameOfLife};
+    static Function[] functions = { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay};
 
     // Grid the functions will work in reference to
     public static Grid grid;
@@ -22,53 +24,49 @@ public static class FunctionLibrary
     /// </summary>
     /// <param name="name"> Enum of the function's name. </param>
     /// <returns> Callback to the function of that name. </returns>
-    public static Function GetFunction(FunctionName name)
-    {
-        return functions[(int)name];
-    }
+    public static Function GetFunction(FunctionName name) => functions[(int)name];
 
     /// <summary>
     /// Switches the state of the target cell to the opposite state.
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
-    public static CellState SwitchState(int index, in Grid grid)
+    public static void SwitchState(int index, in Grid grid, out Cell output)
     {
-        CellState outState = grid[index].state == CellState.Dead ? CellState.Alive : CellState.Dead;
-
-        return outState;
+        output = new()
+        {
+            state = grid[index].state == CellState.Dead ? CellState.Alive : CellState.Dead
+        };
     }
+
 
     /// <summary>
     /// Return alive if only one neighbour is alive.
     /// </summary>
-    /// <param name="target"></param>
-    /// <param name="neighbourhood"></param>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
-    public static CellState InheritNeighbourSingular(int index, in Grid grid)
+    public static void InheritNeighbourSingular(int index, in Grid grid, out Cell output)
     {
-        int j = 0;
-    
+        // For now this is going unused
+
         /* To remove
+        int j = 0;
         foreach (var i in neighbourhood)
         {
             if (grid[i].state == CellState.Alive) j++;
         }*/
-
-        return j == 1 ? CellState.Alive : CellState.Dead;
+        output = new();
     }
 
     /// <summary>
     /// Return alive if the count of alive neighbours is in the range [2,3].
     /// </summary>
-    /// <param name="target"></param>
-    /// <param name="neighbourhood"></param>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
-    public static CellState GameOfLife(int index, in Grid grid)
+    public static void GameOfLife(int index, in Grid grid, out Cell output)
     {
         int count = 0;
+        output = grid[index];
 
         for (int i = 0; i < grid.NeighbourhoodLength + 1; i++)
         {
@@ -81,11 +79,35 @@ public static class FunctionLibrary
 
         if (grid[index].state == CellState.Alive)
         {
-            return count == 2 || count == 3 ? CellState.Alive : CellState.Dead;
+            output.state = count == 2 || count == 3 ? CellState.Alive : CellState.Dead;
         }
         else
-        { 
-            return count == 3 ? CellState.Alive: CellState.Dead;
+        {
+            output.state = count == 3 ? CellState.Alive: CellState.Dead;
+        }
+    }
+
+    // Possibly need to make change in output.health - 1f -> recalculate 1f 
+
+    /// <summary>
+    /// Reduces the health for the cell index for each neighbour with a <see cref="Cell.healthDecayStack"/>. Also decrement that value for this cell.
+    /// </summary>
+    [BurstCompile(CompileSynchronously = true)]
+    [MonoPInvokeCallback(typeof(Function))]
+    public static void ProcessHealthDecay(int index, in Grid grid, out Cell output)
+    {
+        output = grid[index];
+        output.healthDecayStack = math.max(0f, output.healthDecayStack - 1f);
+
+        for (int i = 0; i < grid.NeighbourhoodLength + 1; i++)
+        {
+            if (grid.TryGetNeighbourhoodCellIndex(index, i, out int neighbour) && neighbour != index)
+            {
+                if (grid[neighbour].healthDecayStack > 0)
+                { 
+                    output.health = math.max(0f, output.health - grid[neighbour].decayDamage);
+                }
+            }
         }
     }
 }

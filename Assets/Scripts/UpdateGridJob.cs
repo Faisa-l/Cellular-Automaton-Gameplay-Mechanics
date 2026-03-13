@@ -17,18 +17,15 @@ public struct UpdateGridJob : IJobFor
     // Inputs
     [ReadOnly]
     public Grid grid;
-    public FunctionPointer<FunctionLibrary.Function> cellFunction;
+    public FunctionPointer<FunctionLibrary.Function> updateFunction;
 
     // Outputs
     [WriteOnly, NativeDisableParallelForRestriction]
-    public NativeArray<Cell> outCells;
+    public NativeArray<Cell> output;
 
     public void Execute(int index)
     {
-        CellState outState = cellFunction.Invoke(index, in grid);
-        
-        // Write to output
-        var cell = new Cell { state = outState };
-        outCells[index] = cell;
+        updateFunction.Invoke(index, in grid, out Cell newCell);
+        output[index] = newCell;
     }
 }

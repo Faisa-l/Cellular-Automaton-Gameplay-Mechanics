@@ -33,9 +33,27 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "MoveObject",
+                    "type": "Value",
+                    "id": "5faae295-a10e-4072-853d-dcf96aaa85fb",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "ToggleAutomatonRunning",
                     "type": "Button",
                     "id": "bbed6773-22b5-42fe-8127-cb735535be7e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "PerformEvaluation",
+                    "type": "Button",
+                    "id": "a15b416f-af6b-4fa2-ad59-51f7a8a98d34",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -121,6 +139,61 @@
                     "isPartOfComposite": true
                 },
                 {
+                    "name": "Arrow Keys",
+                    "id": "a69c7345-fc01-4d46-a84c-4461f10e8bd2",
+                    "path": "2DVector",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveObject",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "93a86879-93fc-4ba1-8523-64897a74f802",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard + Mouse",
+                    "action": "MoveObject",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "1e72ec50-90cf-4faa-932a-de1c5919ae8a",
+                    "path": "<Keyboard>/downArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard + Mouse",
+                    "action": "MoveObject",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "d11bdc56-9983-4777-bf85-37a73eeb8a75",
+                    "path": "<Keyboard>/leftArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard + Mouse",
+                    "action": "MoveObject",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "5e53c7ff-e704-430c-8b74-8bbbe2d8e8e7",
+                    "path": "<Keyboard>/rightArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard + Mouse",
+                    "action": "MoveObject",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
                     "name": "",
                     "id": "00dba8ac-6ad0-44e5-a7da-1f1625e93b44",
                     "path": "<Keyboard>/q",
@@ -128,6 +201,17 @@
                     "processors": "",
                     "groups": ";Keyboard + Mouse",
                     "action": "ToggleAutomatonRunning",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "372dbfcb-51c5-4f29-8d15-188b360db070",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard + Mouse",
+                    "action": "PerformEvaluation",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
