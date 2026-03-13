@@ -1,10 +1,8 @@
-using System;
 using UnityEngine;
 
 /// <summary>
 /// Broad class referring to anything damageable, (abstractly) represented as an object composed of multiple cells.
-/// This uses a <see cref="HealthEvaluation"/> to describe its health. It received damage based on collider trigger
-/// calls to deal damage to some cells on its grid.
+/// This uses a <see cref="HealthEvaluation"/> to describe its health. 
 /// </summary>
 public class Entity : MonoBehaviour
 {
