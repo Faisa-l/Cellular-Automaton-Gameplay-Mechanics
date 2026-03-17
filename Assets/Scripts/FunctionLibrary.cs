@@ -1,6 +1,8 @@
 using AOT;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Mathematics;
+using UnityEngine;
 
 /// <summary>
 /// Holds all the types of functions you could use in a <see cref="Grid.Update"/> call.
@@ -11,10 +13,10 @@ using Unity.Mathematics;
 public static class FunctionLibrary
 {
     // All functions will return the cell state for the given cell
-    public delegate void Function(int index, in Grid grid, out Cell output);
-    public enum FunctionName { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay}
+    public delegate void Function(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output);
+    public enum FunctionName { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay , UpdateWorldSimulation}
 
-    static Function[] functions = { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay};
+    static Function[] functions = { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay , UpdateWorldSimulation};
 
     // Grid the functions will work in reference to
     public static Grid grid;
@@ -31,7 +33,7 @@ public static class FunctionLibrary
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
-    public static void SwitchState(int index, in Grid grid, out Cell output)
+    public static void SwitchState(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
     {
         output = new()
         {
@@ -45,7 +47,7 @@ public static class FunctionLibrary
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
-    public static void InheritNeighbourSingular(int index, in Grid grid, out Cell output)
+    public static void InheritNeighbourSingular(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
     {
         // For now this is going unused
 
@@ -63,7 +65,7 @@ public static class FunctionLibrary
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
-    public static void GameOfLife(int index, in Grid grid, out Cell output)
+    public static void GameOfLife(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
     {
         int count = 0;
         output = grid[index];
@@ -94,7 +96,7 @@ public static class FunctionLibrary
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
-    public static void ProcessHealthDecay(int index, in Grid grid, out Cell output)
+    public static void ProcessHealthDecay(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
     {
         output = grid[index];
         output.healthDecayStack = math.max(0f, output.healthDecayStack - 1f);
@@ -106,6 +108,59 @@ public static class FunctionLibrary
                 if (grid[neighbour].healthDecayStack > 0)
                 { 
                     output.health = math.max(0f, output.health - grid[neighbour].decayDamage);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Updates a cell's values based on the properties of itself and its neighbours, and schedules cell movements.
+    /// </summary>
+    [BurstCompile(CompileSynchronously = true)]
+    [MonoPInvokeCallback(typeof(Function))]
+    public static void UpdateWorldSimulation(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
+    {
+        // PUT THIS AS A PARAMETER FOR THE DELEGATE 
+        output = grid[index];
+        for (int i = 0; i < grid.NeighbourhoodLength + 1; i++)
+        {
+            if (grid.TryGetNeighbourhoodCellIndex(index, i, out int neighbour) && neighbour != index)
+            {
+
+                // --- MOVEMENT CHECK ---
+                // Loop through each neighbour, check how many cells want to move to this cell, update the requests.
+                // Using i to determine vertical and horizontal cells
+
+                if (grid[index].isEmpty == 1)
+                {
+                    /* There is definitely a way to simplify this since:
+                     * Potential neighbours are all odd (i % 2 == 1) would return true
+                     * Some pattern with 1-7 and 3-5 being respective vertical-horizontal checks
+                     */
+                    var neighbourDrift = grid[neighbour].drift;
+                    switch (i)
+                    {
+                        case 1: // Up
+                            if (neighbourDrift.y == -1) movementRequests.Add(index, neighbour);
+                            break;
+
+                        case 3: // Left
+                            if (neighbourDrift.x == 1) movementRequests.Add(index, neighbour);
+                            break;
+
+                        case 5: // Right
+                            if (neighbourDrift.x == -1) movementRequests.Add(index, neighbour);
+                            break;
+
+                        case 7: // Down
+                            if (neighbourDrift.y == 1) movementRequests.Add(index, neighbour);
+                            break;
+
+                        default:
+                            break;
+                    }
+
+
                 }
             }
         }

@@ -1,5 +1,6 @@
-
 using Unity.Collections;
+using Unity.Mathematics;
+using UnityEngine;
 
 /// <summary>
 /// Defines the states of a cell in a grid.
@@ -19,6 +20,12 @@ public struct Cell
         damage,                 // Damage the cell can deal to others (health damage).
         appliedDecayStack,
         decayDamage;
+
+    public int2 drift;          // How much the cell should move in either direction every update
+
+    [Range(0, 1)]
+    public int isEmpty;        // If another cell can move into this cell
+
 
 }
 

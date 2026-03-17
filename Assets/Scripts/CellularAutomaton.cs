@@ -47,6 +47,22 @@ public class CellularAutomaton : MonoBehaviour
 
     ref Grid GetGrid() => ref grid;
 
+    private void OnValidate()
+    {
+        // Clamp drift values to [-1, 1]
+        ref var s_drift = ref startingCell.drift;
+        if (s_drift.x > 1) s_drift.x = 1;
+        if (s_drift.x < -1) s_drift.x = -1;
+        if (s_drift.y > 1) s_drift.y = 1;
+        if (s_drift.y < -1) s_drift.y = -1;
+
+        ref var p_drift = ref paintedCell.drift;
+        if (p_drift.x > 1) p_drift.x = 1;
+        if (p_drift.x < -1) p_drift.x = -1;
+        if (p_drift.y > 1) p_drift.y = 1;
+        if (p_drift.y < -1) p_drift.y = -1;
+    }
+
     private void Start()
     {
         Initialise();

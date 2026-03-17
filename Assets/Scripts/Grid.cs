@@ -2,7 +2,9 @@ using System;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Burst;
+using UnityEngine;
 using static FunctionLibrary;
+using Random = Unity.Mathematics.Random;
 
 /// <summary>
 /// A grid represents the area which cells inhabit.
@@ -17,6 +19,8 @@ public struct Grid
     int neighbourhoodSize;
     FunctionName functionName;
     FunctionPointer<Function> function;
+
+    static Random rand = Random.CreateFromIndex((uint)Time.time);
 
     public int Rows { get; private set; }
     public int Columns { get; private set; }
@@ -63,33 +67,53 @@ public struct Grid
     {
         // Output cell array to replace current grid
         NativeArray<Cell> newCells = new(cells.Length, Allocator.TempJob);
+        NativeParallelMultiHashMap<int, int> movementRequests = new(cells.Length, Allocator.TempJob);
         UpdateGridJob updateJob = new()
         {
             grid = this,
             updateFunction = function,
+            movementRequests = movementRequests.AsParallelWriter(),
             output = newCells
         };
 
         // Test different batch counts: rows, 1, 32, etc.
         updateJob.ScheduleParallelByRef(cells.Length, 1, default).Complete();
 
+        // Resolve movement requests -> pick a random candidate for each request
+        if (functionName == FunctionName.UpdateWorldSimulation)
+        {
+            var (requests, uniqueCount) = movementRequests.GetUniqueKeyArray(Allocator.TempJob);
+            for (int i = 0; i < uniqueCount; i++)
+            {
+                // Iterate through a request's candidates and randomly decide to make the current candidate a winner
+                int request = requests[i];
+                var candidates = movementRequests.GetValuesForKey(request);
+                int winner = PickRandomCandidate(candidates);
+                newCells[request] = newCells[winner];
+                newCells[winner] = new Cell() { isEmpty = 1 };
+            }
+            requests.Dispose();
+        }
+
         // Replace current grid with new cells + cleanup
         cells.CopyFrom(newCells);
         newCells.Dispose();
+        movementRequests.Dispose();
+    }
 
-        /*
-        for (int i = 0;i < cells.Length; i++)
+    // i.e pick a random item from the candidates enumerator and return it as the winner
+    private static int PickRandomCandidate(NativeParallelMultiHashMap<int, int>.Enumerator candidates)
+    {
+        int count = 0;
+        candidates.MoveNext();
+        int winner = candidates.Current;
+        while (candidates.MoveNext())
         {
-            CellState outState = GetFunction(functionName)(i, default, this);
-
-            // Write to output
-            var cell = new Cell { state = outState };
-            newCells[i] = cell;
+            count++;
+            if (count == rand.NextInt(0, count)) winner = candidates.Current;
         }
-        cells.CopyFrom(newCells);
-        newCells.Dispose();
-        Array.Copy(newCells, cells, newCells.Length);
-        */
+
+        return winner;
     }
 
     public readonly bool TryGetNeighbourhoodCellIndex(int index, int neighbourhoodIndex, out int neighbour)

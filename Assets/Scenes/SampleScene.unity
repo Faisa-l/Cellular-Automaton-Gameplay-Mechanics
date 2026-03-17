@@ -151,19 +151,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 7790273893292421316, guid: 1b4ee666d235cf841b1c7772e22de35a, type: 3}
-  rows: 4
-  columns: 5
+  rows: 50
+  columns: 50
   neighbourhoodSize: 1
-  functionName: 3
+  functionName: 4
   updatesPerSecond: 24
-  repeatingUpdate: 1
+  repeatingUpdate: 0
   startingCell:
-    state: 1
-    health: 10
+    state: 0
+    health: 0
     healthDecayStack: 0
     damage: 0
     appliedDecayStack: 0
     decayDamage: 0
+    drift:
+      x: 0
+      y: 0
+    isEmpty: 1
   paintedCell:
     state: 0
     health: 10
@@ -171,6 +175,10 @@ MonoBehaviour:
     damage: 0
     appliedDecayStack: 2
     decayDamage: 5
+    drift:
+      x: 0
+      y: 1
+    isEmpty: 0
 --- !u!4 &199781311
 Transform:
   m_ObjectHideFlags: 0
