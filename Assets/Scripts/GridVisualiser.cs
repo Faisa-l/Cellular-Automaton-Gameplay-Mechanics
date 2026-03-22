@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -12,7 +11,7 @@ public class GridVisualiser : MonoBehaviour
     StateColor[] colorMap;
 
     [SerializeField]
-    CellMaterialValues[] materialMap;
+    CellMaterialValues[] materialConfigurations;
 
     [SerializeField]
     Material fallbackMaterial;
@@ -22,6 +21,7 @@ public class GridVisualiser : MonoBehaviour
 
     GameObject[] drawnObjects;
     Dictionary<CellState, Color> colorPairs;
+    Dictionary<CellMaterial, CellMaterialValues> materialMap;
     static MaterialPropertyBlock block;
 
     /// <summary>
@@ -35,8 +35,10 @@ public class GridVisualiser : MonoBehaviour
         this.grid = grid;
         block = new MaterialPropertyBlock();
         colorPairs = new Dictionary<CellState, Color>();
+        materialMap = new Dictionary<CellMaterial, CellMaterialValues>();
 
         foreach (var pair in colorMap) colorPairs.Add(pair.state, pair.color);
+        foreach (var values in materialConfigurations) materialMap.Add(values.type, values);
     }
 
     // Draws the grid 
@@ -70,24 +72,16 @@ public class GridVisualiser : MonoBehaviour
     {
         var obj = drawnObjects[i];
         var renderer = obj.GetComponent<Renderer>();
-        var materialValues = materialMap.FirstOrDefault((x) => x.type == grid[i].material);
-
-        /* Apply a new material to the cell
-        renderer.material = cellMaterial;
-        var material = renderer.material;
-        var color = material.color;
-        color.a = Mathf.Clamp(grid[i].health / 10f, 0f, 1f);
-        material.color = color;
-        */
+        materialMap.TryGetValue(grid[i].material, out var materialValues);
         var color = materialValues.color;
         color.a = Mathf.Clamp(grid[i].health / 10f, 0f, 1f);
+
         renderer.GetPropertyBlock(block);
         if (materialValues.texture != null) block.SetTexture("_BaseMap", materialValues.texture);
         block.SetColor("_BaseColor", color);
         block.SetColor("_EmissionColor", materialValues.emissionColor * materialValues.emissionIntensity);
         block.SetFloat("_Metallic", materialValues.metallicMap);
         renderer.SetPropertyBlock(block); 
-        
     }
 
     /// <summary>

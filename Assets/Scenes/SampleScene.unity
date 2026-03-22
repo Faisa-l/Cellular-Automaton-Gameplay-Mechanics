@@ -151,8 +151,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 7790273893292421316, guid: 1b4ee666d235cf841b1c7772e22de35a, type: 3}
-  rows: 50
-  columns: 50
+  rows: 100
+  columns: 100
   neighbourhoodSize: 1
   functionName: 4
   updatesPerSecond: 24
@@ -213,7 +213,7 @@ MonoBehaviour:
     color: {r: 0, g: 0, b: 0, a: 0}
   - state: 1
     color: {r: 1, g: 1, b: 1, a: 0}
-  materialMap:
+  materialConfigurations:
   - type: 0
     texture: {fileID: 0}
     color: {r: 0, g: 0, b: 0, a: 0}
@@ -227,7 +227,7 @@ MonoBehaviour:
     emissionColor: {r: 0, g: 0, b: 0, a: 0}
     emissionIntensity: 0
     metallicMap: 0
-    smoothness: 0
+    smoothness: 0.5
   - type: 2
     texture: {fileID: 0}
     color: {r: 1, g: 1, b: 1, a: 0}
@@ -237,10 +237,10 @@ MonoBehaviour:
     smoothness: 0.5
   - type: 4
     texture: {fileID: 0}
-    color: {r: 0, g: 0.6401701, b: 1, a: 0}
-    emissionColor: {r: 0.99999994, g: 0.99999994, b: 0.99999994, a: 0}
+    color: {r: 0, g: 0.81057835, b: 1, a: 0}
+    emissionColor: {r: 0, g: 0, b: 0, a: 0}
     emissionIntensity: 0
-    metallicMap: 0.35
+    metallicMap: 0
     smoothness: 0.5
   fallbackMaterial: {fileID: 2100000, guid: dad7d67b16ee61a4bac5e20c6a3afaba, type: 2}
 --- !u!114 &199781313

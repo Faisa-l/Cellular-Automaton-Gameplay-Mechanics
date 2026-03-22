@@ -11,10 +11,10 @@ public class CellularAutomaton : MonoBehaviour
     [SerializeField, Tooltip("Prefab used to display each cell")]
     GameObject cellPrefab;
 
-    [SerializeField, Tooltip("Number of roaws in the cellular automaton"), Range(1, 50)]
+    [SerializeField, Tooltip("Number of roaws in the cellular automaton"), Range(1, 256)]
     int rows = 6;
 
-    [SerializeField, Tooltip("Size of the rows in the cellular automaton"), Range(1, 50)]
+    [SerializeField, Tooltip("Size of the rows in the cellular automaton"), Range(1, 256)]
     int columns = 8;
 
     [SerializeField, Range(1, 5)]
