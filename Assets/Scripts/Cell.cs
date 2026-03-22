@@ -1,4 +1,3 @@
-using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -12,8 +11,10 @@ public struct Cell
 {
     // Primary state of the cell
     public CellState state;
+    
+    public CellMaterial material;
 
-    // All types of cell data
+    // All types of cell data are expressed as a float.
     public float
         health,                 // Health of a cell.
         healthDecayStack,       // If the cell reduces the health of its neighbours.
@@ -23,9 +24,9 @@ public struct Cell
 
     public int2 drift;          // How much the cell should move in either direction every update
 
+    // bools are represented with ints (technically by bytes but for our purposes they are interchangeable)
     [Range(0, 1)]
     public int isEmpty;        // If another cell can move into this cell
-
 
 }
 

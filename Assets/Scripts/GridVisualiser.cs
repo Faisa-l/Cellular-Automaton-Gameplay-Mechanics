@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -9,6 +10,12 @@ public class GridVisualiser : MonoBehaviour
 {
     [SerializeField]
     StateColor[] colorMap;
+
+    [SerializeField]
+    CellMaterialValues[] materialMap;
+
+    [SerializeField]
+    Material fallbackMaterial;
 
     GameObject prefab;
     Grid grid;
@@ -29,10 +36,7 @@ public class GridVisualiser : MonoBehaviour
         block = new MaterialPropertyBlock();
         colorPairs = new Dictionary<CellState, Color>();
 
-        foreach (var pair in colorMap)
-        {
-            colorPairs.Add(pair.state, pair.color);
-        }
+        foreach (var pair in colorMap) colorPairs.Add(pair.state, pair.color);
     }
 
     // Draws the grid 
@@ -66,12 +70,24 @@ public class GridVisualiser : MonoBehaviour
     {
         var obj = drawnObjects[i];
         var renderer = obj.GetComponent<Renderer>();
-        colorPairs.TryGetValue(grid[i].state, out var color);
-        color.a = Mathf.Clamp(grid[i].health / 10f, 0f, 1f);
+        var materialValues = materialMap.FirstOrDefault((x) => x.type == grid[i].material);
 
+        /* Apply a new material to the cell
+        renderer.material = cellMaterial;
+        var material = renderer.material;
+        var color = material.color;
+        color.a = Mathf.Clamp(grid[i].health / 10f, 0f, 1f);
+        material.color = color;
+        */
+        var color = materialValues.color;
+        color.a = Mathf.Clamp(grid[i].health / 10f, 0f, 1f);
         renderer.GetPropertyBlock(block);
+        if (materialValues.texture != null) block.SetTexture("_BaseMap", materialValues.texture);
         block.SetColor("_BaseColor", color);
-        renderer.SetPropertyBlock(block);
+        block.SetColor("_EmissionColor", materialValues.emissionColor * materialValues.emissionIntensity);
+        block.SetFloat("_Metallic", materialValues.metallicMap);
+        renderer.SetPropertyBlock(block); 
+        
     }
 
     /// <summary>
@@ -104,4 +120,3 @@ public class GridVisualiser : MonoBehaviour
         return true;
     }
 }
-
