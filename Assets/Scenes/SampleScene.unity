@@ -158,25 +158,27 @@ MonoBehaviour:
   updatesPerSecond: 24
   repeatingUpdate: 0
   startingCell:
-    state: 0
-    material: 4
+    state: 1
+    material: 2
     health: 10
     healthDecayStack: 0
     damage: 0
     appliedDecayStack: 0
     decayDamage: 0
+    liquidLevel: 0
     drift:
       x: 0
       y: 0
     isEmpty: 1
   paintedCell:
-    state: 0
-    material: 0
+    state: 1
+    material: 4
     health: 10
     healthDecayStack: 0
     damage: 0
     appliedDecayStack: 2
     decayDamage: 5
+    liquidLevel: 3
     drift:
       x: 0
       y: 1

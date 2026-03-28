@@ -107,8 +107,8 @@ public class CellularAutomaton : MonoBehaviour
     public void NextTick()
     {
         OnUpdate?.Invoke();
-        grid.Update();
-        visualiser.UpdateVisualisation();
+        int[] updated = grid.Update();
+        visualiser.UpdateVisualisation(updated);
     }
 
     // For input call
@@ -127,7 +127,7 @@ public class CellularAutomaton : MonoBehaviour
     public void OverrideCell(int index, Cell newCell)
     {
         grid[index] = newCell;
-        visualiser.UpdateVisualisation();
+        visualiser.UpdateVisualisation(index);
     }
 
     public void ToggleRepeatingUpdate()

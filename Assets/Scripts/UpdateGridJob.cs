@@ -25,6 +25,9 @@ public struct UpdateGridJob : IJobFor
     [WriteOnly, NativeDisableParallelForRestriction]
     public NativeArray<Cell> output;
 
+    [WriteOnly]
+    public NativeList<int>.ParallelWriter updatedIndices;
+
     [WriteOnly, NativeDisableParallelForRestriction]
     public NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests;
 
@@ -33,5 +36,7 @@ public struct UpdateGridJob : IJobFor
         // update function needs to take in movement requests array 
         updateFunction.Invoke(index, in grid, in movementRequests, out Cell newCell);
         output[index] = newCell;
+
+        if (newCell != grid[index]) updatedIndices.AddNoResize(index);
     }
 }

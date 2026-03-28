@@ -20,6 +20,7 @@ public class GridVisualiser : MonoBehaviour
     Grid grid;
 
     GameObject[] drawnObjects;
+    Renderer[] renderers;
     Dictionary<CellState, Color> colorPairs;
     Dictionary<CellMaterial, CellMaterialValues> materialMap;
     static MaterialPropertyBlock block;
@@ -45,6 +46,7 @@ public class GridVisualiser : MonoBehaviour
     public void Draw()
     {
         drawnObjects ??= new GameObject[grid.Size];
+        renderers ??= new Renderer[grid.Size];
 
         for (int i = 0; i < grid.Size; i++)
         {
@@ -54,39 +56,34 @@ public class GridVisualiser : MonoBehaviour
 
             obj.transform.localPosition = position;
             drawnObjects[i] = obj;
+            renderers[i] = obj.GetComponent<Renderer>();
             ApplyCellColour(i);
         }
     }
 
-    // Changes the colours on all the cells
+    // Changes the colour of the cells inside the specified list.
     // Should make this take in an array of cells to update
-    public void UpdateVisualisation()
+    public void UpdateVisualisation(int[] updated)
     {
-        for (int i = 0; i < grid.Size; i++)
+        for (int i = 0; i < updated.Length; i++)
         {
-            ApplyCellColour(i);
+            ApplyCellColour(updated[i]);
         }
     }
 
-    /* This single function is the main FPS bottleneck of the project - this could prbably easily be done with a custom shader that:
-    * - Takes in the the CellMaterialValues struct (need to switch out colour fields to float4).
-    * - Uses that to apply the properties on the material.
-    * - Instead of instancing a prefab use something like Graphics.RenderMeshPrimitives 
-    * Could also maybe instead make a buffer for each CellMaterialValues property?
-    * This is only being the way it currently is because this needs to interface with Unity component stuff so that it's easier to extend the system.
-    * Doing it in this other way would mean this class has to do more than just colour the cells, which is a bit beyond the scope of this project.
-    * Plus I don't know how you would write this shader (I assume it's not that complicated but it's time spent doing something not particularly relevant).
-    */
+    public void UpdateVisualisation(int cell) => ApplyCellColour(cell);
 
+    // Some part of this has a GC allocation that needs to be resolved
     // Individually change the colour of cell i
     void ApplyCellColour(int i)
     {
         var obj = drawnObjects[i];
-        var renderer = obj.GetComponent<Renderer>();
+        var renderer = renderers[i];
         materialMap.TryGetValue(grid[i].material, out var materialValues);
         var color = materialValues.color;
         color.a = Mathf.Clamp(grid[i].health / 10f, 0f, 1f);
 
+        // This part is unoptimised
         renderer.GetPropertyBlock(block);
         if (materialValues.texture != null) block.SetTexture("_BaseMap", materialValues.texture);
         block.SetColor("_BaseColor", color);

@@ -1,3 +1,5 @@
+#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o) (uses IEquatable)
+using System;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -5,9 +7,8 @@ using UnityEngine;
 /// Defines the states of a cell in a grid.
 /// Cells define data which can be used to compute their next state.
 /// </summary>
-/// 
-[System.Serializable]
-public partial struct Cell
+[Serializable]
+public partial struct Cell : IEquatable<Cell>
 {
     // Primary state of the cell
     public CellState state;
@@ -27,8 +28,7 @@ public partial struct Cell
 
     // bools are represented with ints (technically by bytes but for our purposes they are interchangeable)
     [Range(0, 1)]
-    public int isEmpty;        // If another cell can move into this cell
-
+    public int isEmpty;        // If another cell can move into this 
 }
 
 // Default cell types
@@ -72,6 +72,47 @@ public partial struct Cell
         drift = 0,
         isEmpty = 0
     };
+
+    public static bool operator ==(Cell lhs, Cell rhs)
+    {
+        return lhs.Equals(rhs);
+    }
+
+    public static bool operator !=(Cell lhs, Cell rhs)
+    {
+        return !lhs.Equals(rhs);
+    }
+
+    public bool Equals(Cell other)
+    {
+        return state == other.state &&
+               material == other.material &&
+               health == other.health &&
+               healthDecayStack == other.healthDecayStack &&
+               damage == other.damage &&
+               appliedDecayStack == other.appliedDecayStack &&
+               decayDamage == other.decayDamage &&
+               liquidLevel == other.liquidLevel &&
+               drift.Equals(other.drift) &&
+               isEmpty == other.isEmpty;
+    }
+
+    public override int GetHashCode()
+    {
+        HashCode hash = new HashCode();
+        hash.Add(state);
+        hash.Add(material);
+        hash.Add(health);
+        hash.Add(healthDecayStack);
+        hash.Add(damage);
+        hash.Add(appliedDecayStack);
+        hash.Add(decayDamage);
+        hash.Add(liquidLevel);
+        hash.Add(drift);
+        hash.Add(isEmpty);
+        return hash.ToHashCode();
+    }
 }
+#pragma warning restore CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
 
 

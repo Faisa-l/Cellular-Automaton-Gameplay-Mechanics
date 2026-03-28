@@ -63,16 +63,19 @@ public struct Grid
     public void Dispose() => cells.Dispose();
 
     // Progress through the next time step of the grid
-    public readonly void Update()
+    // Returns an array of cell indexes that were updated
+    public readonly int[] Update()
     {
         // Output cell array to replace current grid
         NativeArray<Cell> newCells = new(cells.Length, Allocator.TempJob);
         NativeParallelMultiHashMap<int, int> movementRequests = new(cells.Length, Allocator.TempJob);
+        NativeList<int> updatedIndicies = new(cells.Length, Allocator.TempJob);
         UpdateGridJob updateJob = new()
         {
             grid = this,
             updateFunction = function,
             movementRequests = movementRequests.AsParallelWriter(),
+            updatedIndices = updatedIndicies.AsParallelWriter(),
             output = newCells
         };
 
@@ -91,14 +94,20 @@ public struct Grid
                 int winner = PickRandomCandidate(candidates);
                 newCells[request] = newCells[winner];
                 newCells[winner] = Cell.DefaultAir;
+                updatedIndicies.AddNoResize(winner);
+                updatedIndicies.AddNoResize(request);
             }
             requests.Dispose();
         }
+        int[] updatedCells = updatedIndicies.AsArray().ToArray();
 
         // Replace current grid with new cells + cleanup
         cells.CopyFrom(newCells);
         newCells.Dispose();
         movementRequests.Dispose();
+        updatedIndicies.Dispose();
+
+        return updatedCells;
     }
 
     // i.e pick a random item from the candidates enumerator and return it as the winner
