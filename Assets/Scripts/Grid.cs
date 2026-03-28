@@ -90,7 +90,7 @@ public struct Grid
                 var candidates = movementRequests.GetValuesForKey(request);
                 int winner = PickRandomCandidate(candidates);
                 newCells[request] = newCells[winner];
-                newCells[winner] = new Cell() { isEmpty = 1 };
+                newCells[winner] = Cell.DefaultAir;
             }
             requests.Dispose();
         }

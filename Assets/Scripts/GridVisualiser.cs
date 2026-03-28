@@ -59,6 +59,7 @@ public class GridVisualiser : MonoBehaviour
     }
 
     // Changes the colours on all the cells
+    // Should make this take in an array of cells to update
     public void UpdateVisualisation()
     {
         for (int i = 0; i < grid.Size; i++)
@@ -66,6 +67,16 @@ public class GridVisualiser : MonoBehaviour
             ApplyCellColour(i);
         }
     }
+
+    /* This single function is the main FPS bottleneck of the project - this could prbably easily be done with a custom shader that:
+    * - Takes in the the CellMaterialValues struct (need to switch out colour fields to float4).
+    * - Uses that to apply the properties on the material.
+    * - Instead of instancing a prefab use something like Graphics.RenderMeshPrimitives 
+    * Could also maybe instead make a buffer for each CellMaterialValues property?
+    * This is only being the way it currently is because this needs to interface with Unity component stuff so that it's easier to extend the system.
+    * Doing it in this other way would mean this class has to do more than just colour the cells, which is a bit beyond the scope of this project.
+    * Plus I don't know how you would write this shader (I assume it's not that complicated but it's time spent doing something not particularly relevant).
+    */
 
     // Individually change the colour of cell i
     void ApplyCellColour(int i)

@@ -151,8 +151,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 7790273893292421316, guid: 1b4ee666d235cf841b1c7772e22de35a, type: 3}
-  rows: 100
-  columns: 100
+  rows: 256
+  columns: 256
   neighbourhoodSize: 1
   functionName: 4
   updatesPerSecond: 24

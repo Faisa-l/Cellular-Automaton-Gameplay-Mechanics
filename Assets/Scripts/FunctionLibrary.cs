@@ -2,7 +2,6 @@ using AOT;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
-using UnityEngine;
 
 /// <summary>
 /// Holds all the types of functions you could use in a <see cref="Grid.Update"/> call.
@@ -120,50 +119,65 @@ public static class FunctionLibrary
     [MonoPInvokeCallback(typeof(Function))]
     public static void UpdateWorldSimulation(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
     {
-        // PUT THIS AS A PARAMETER FOR THE DELEGATE 
         output = grid[index];
         for (int i = 0; i < grid.NeighbourhoodLength + 1; i++)
         {
             if (grid.TryGetNeighbourhoodCellIndex(index, i, out int neighbour) && neighbour != index)
             {
 
-                // --- MOVEMENT CHECK ---
-                // Loop through each neighbour, check how many cells want to move to this cell, update the requests.
-                // Using i to determine vertical and horizontal cells
-
+                // This cell is empty checks
                 if (grid[index].isEmpty == 1)
                 {
-                    /* There is definitely a way to simplify this since:
-                     * Potential neighbours are all odd (i % 2 == 1) would return true
-                     * Some pattern with 1-7 and 3-5 being respective vertical-horizontal checks
-                     */
-                    var neighbourDrift = grid[neighbour].drift;
-                    switch (i)
-                    {
-                        case 1: // Up
-                            if (neighbourDrift.y == -1) movementRequests.Add(index, neighbour);
-                            break;
+                    // Liquid checks
+                    if (grid[neighbour].liquidLevel > 0) BecomeLiquidFromNeighbour(neighbour, in grid, ref output);
 
-                        case 3: // Left
-                            if (neighbourDrift.x == 1) movementRequests.Add(index, neighbour);
-                            break;
-
-                        case 5: // Right
-                            if (neighbourDrift.x == -1) movementRequests.Add(index, neighbour);
-                            break;
-
-                        case 7: // Down
-                            if (neighbourDrift.y == 1) movementRequests.Add(index, neighbour);
-                            break;
-
-                        default:
-                            break;
-                    }
-
-
+                    // --- MOVEMENT CHECK ---
+                    UpdateCellDrift(index, in grid, in movementRequests, i, neighbour);
+                }
+                else
+                {
+                    if (grid[index].liquidLevel > 0) UpdateLiquidLevel(ref output);
                 }
             }
         }
+
+        // Create movement requests 
+        static void UpdateCellDrift(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, int i, int neighbour)
+        {
+            int2 neighbourDrift = grid[neighbour].drift;
+            switch (i)
+            {
+                case 1: // Up
+                    if (neighbourDrift.y == -1) movementRequests.Add(index, neighbour);
+                    break;
+
+                case 3: // Left
+                    if (neighbourDrift.x == 1) movementRequests.Add(index, neighbour);
+                    break;
+
+                case 5: // Right
+                    if (neighbourDrift.x == -1) movementRequests.Add(index, neighbour);
+                    break;
+
+                case 7: // Down
+                    if (neighbourDrift.y == 1) movementRequests.Add(index, neighbour);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // When cell is empty, it is replaced by the liquid of the neighbour
+        static void BecomeLiquidFromNeighbour(int neighbour, in Grid grid, ref Cell output)
+        {
+            float neighbourLiquids = grid[neighbour].liquidLevel;
+            output = grid[neighbour];
+            output.liquidLevel -= 1;
+        }
+
+        // If the cell's liquid were to update then the level should be reduced.
+        static void UpdateLiquidLevel(ref Cell output) => output.liquidLevel -= 1;
     }
 }
 

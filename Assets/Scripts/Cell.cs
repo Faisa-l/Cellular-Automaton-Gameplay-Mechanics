@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 /// 
 [System.Serializable]
-public struct Cell
+public partial struct Cell
 {
     // Primary state of the cell
     public CellState state;
@@ -20,7 +20,8 @@ public struct Cell
         healthDecayStack,       // If the cell reduces the health of its neighbours.
         damage,                 // Damage the cell can deal to others (health damage).
         appliedDecayStack,
-        decayDamage;
+        decayDamage,
+        liquidLevel;
 
     public int2 drift;          // How much the cell should move in either direction every update
 
@@ -28,6 +29,49 @@ public struct Cell
     [Range(0, 1)]
     public int isEmpty;        // If another cell can move into this cell
 
+}
+
+// Default cell types
+public partial struct Cell
+{
+    public static Cell DefaultRock = new ()
+    {
+        state = CellState.Alive,
+        material = CellMaterial.Rock,
+        health = 0,
+        healthDecayStack = 0,
+        damage = 0,
+        appliedDecayStack = 0,
+        decayDamage = 0,
+        drift = 0,
+        isEmpty = 0
+    };
+
+    public static Cell DefaultAir = new ()
+    {
+        state = CellState.Alive,
+        material = CellMaterial.Air,
+        health = 0,
+        healthDecayStack = 0,
+        damage = 0,
+        appliedDecayStack = 0,
+        decayDamage = 0,
+        drift = 0,
+        isEmpty = 1
+    };
+
+    public static Cell DefaultWater = new ()
+    {
+        state = CellState.Alive,
+        material = CellMaterial.Water,
+        health = 0,
+        healthDecayStack = 0,
+        damage = 0,
+        appliedDecayStack = 0,
+        decayDamage = 0,
+        drift = 0,
+        isEmpty = 0
+    };
 }
 
 
