@@ -17,15 +17,26 @@ public struct UpdateGridJob : IJobFor
     // Inputs
     [ReadOnly]
     public Grid grid;
+
+    [ReadOnly]
     public FunctionPointer<FunctionLibrary.Function> updateFunction;
 
     // Outputs
     [WriteOnly, NativeDisableParallelForRestriction]
     public NativeArray<Cell> output;
 
+    [WriteOnly]
+    public NativeList<int>.ParallelWriter updatedIndices;
+
+    [WriteOnly, NativeDisableParallelForRestriction]
+    public NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests;
+
     public void Execute(int index)
     {
-        updateFunction.Invoke(index, in grid, out Cell newCell);
+        // update function needs to take in movement requests array 
+        updateFunction.Invoke(index, in grid, in movementRequests, out Cell newCell);
         output[index] = newCell;
+
+        if (newCell != grid[index]) updatedIndices.AddNoResize(index);
     }
 }

@@ -1,6 +1,8 @@
 using AOT;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Mathematics;
+
 
 /// <summary>
 /// Holds all the types of functions you could use in a <see cref="Grid.Update"/> call.
@@ -11,13 +13,10 @@ using Unity.Mathematics;
 public static class FunctionLibrary
 {
     // All functions will return the cell state for the given cell
-    public delegate void Function(int index, in Grid grid, out Cell output);
-    public enum FunctionName { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay}
+    public delegate void Function(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output);
+    public enum FunctionName { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay , UpdateWorldSimulation}
 
-    static Function[] functions = { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay};
-
-    // Grid the functions will work in reference to
-    public static Grid grid;
+    static Function[] functions = { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay , UpdateWorldSimulation};
 
     /// <summary>
     /// Return the function callback for a grid function.
@@ -31,7 +30,7 @@ public static class FunctionLibrary
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
-    public static void SwitchState(int index, in Grid grid, out Cell output)
+    public static void SwitchState(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
     {
         output = new()
         {
@@ -45,7 +44,7 @@ public static class FunctionLibrary
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
-    public static void InheritNeighbourSingular(int index, in Grid grid, out Cell output)
+    public static void InheritNeighbourSingular(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
     {
         // For now this is going unused
 
@@ -63,7 +62,7 @@ public static class FunctionLibrary
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
-    public static void GameOfLife(int index, in Grid grid, out Cell output)
+    public static void GameOfLife(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
     {
         int count = 0;
         output = grid[index];
@@ -94,7 +93,7 @@ public static class FunctionLibrary
     /// </summary>
     [BurstCompile(CompileSynchronously = true)]
     [MonoPInvokeCallback(typeof(Function))]
-    public static void ProcessHealthDecay(int index, in Grid grid, out Cell output)
+    public static void ProcessHealthDecay(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
     {
         output = grid[index];
         output.healthDecayStack = math.max(0f, output.healthDecayStack - 1f);
@@ -109,6 +108,105 @@ public static class FunctionLibrary
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Updates a cell's values based on the properties of itself and its neighbours, and schedules cell movements.
+    /// </summary>
+    [BurstCompile(CompileSynchronously = true)]
+    [MonoPInvokeCallback(typeof(Function))]
+    public static void UpdateWorldSimulation(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
+    {
+        output = grid[index];
+        for (int i = 0; i < grid.NeighbourhoodLength + 1; i++)
+        {
+            if (grid.TryGetNeighbourhoodCellIndex(index, i, out int neighbour) && neighbour != index)
+            {
+                // If   -> the current cell is empty
+                // else -> cell is not empty checks
+                if (grid[index].isEmpty == 1)
+                {
+                    // Liquid checks
+                    if (grid[neighbour].liquidLevel > 0) BecomeLiquidFromNeighbour(neighbour, in grid, ref output);
+
+                    // Check if cells move into here
+                    UpdateCellDrift(index, in grid, in movementRequests, i, neighbour);
+                }
+                else
+                {
+                    if (grid[index].liquidLevel > 0) UpdateLiquidLevel(ref output);
+
+                    // Initial temperature check (check melting after all neighbours checked)
+                    if (output.heatAbosorption > 0) UpdateTemperatureAndHeat(in grid, ref output, neighbour);
+                }
+            }
+        }
+
+        // Second temperature check - melt cell if it's too hot (and not already a liquid)
+        AdjustIfMelted(grid, ref output);
+
+        // --- FUNCTION END ---
+
+        #region helpers
+        // Create movement requests 
+        static void UpdateCellDrift(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, int i, int neighbour)
+        {
+            int2 neighbourDrift = grid[neighbour].drift;
+            switch (i)
+            {
+                case 1: // Up
+                    if (neighbourDrift.y == -1) movementRequests.Add(index, neighbour);
+                    break;
+
+                case 3: // Left
+                    if (neighbourDrift.x == 1) movementRequests.Add(index, neighbour);
+                    break;
+
+                case 5: // Right
+                    if (neighbourDrift.x == -1) movementRequests.Add(index, neighbour);
+                    break;
+
+                case 7: // Down
+                    if (neighbourDrift.y == 1) movementRequests.Add(index, neighbour);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // When cell is empty, it is replaced by the liquid of the neighbour
+        static void BecomeLiquidFromNeighbour(int neighbour, in Grid grid, ref Cell output)
+        {
+            float neighbourLiquids = grid[neighbour].liquidLevel;
+            output = grid[neighbour];
+            output.liquidLevel -= 1;
+        }
+
+        // If the cell's liquid were to update then the level should be reduced.
+        static void UpdateLiquidLevel(ref Cell output) => output.liquidLevel -= 1;
+
+        // Will melt the cell if needed
+        static void AdjustIfMelted(in Grid grid, ref Cell output)
+        {
+            if (output.liquidLevel <= 0 && output.temperature > output.meltingPoint)
+            {
+                output.liquidLevel += grid.MELTING_LIQUID;
+                output.heat += grid.MELTING_HEAT;
+            }
+        }
+
+        // Makes the cell hotter based on the neighbour's temperature, provided the cell can absorb the heat
+        static void UpdateTemperatureAndHeat(in Grid grid, ref Cell output, int neighbour)
+        {
+            // Maximum heat added is clamped by how much heat the cell can absorb
+            float heat = grid[neighbour].heat;
+            float remainder = math.max(output.heatAbosorption - heat, 0);
+            float heatToAdd = math.clamp(heat, 0, remainder);
+            output.heatAbosorption = remainder;
+            output.temperature += heatToAdd;
+        }
+        #endregion
     }
 }
 

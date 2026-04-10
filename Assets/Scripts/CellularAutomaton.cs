@@ -11,10 +11,10 @@ public class CellularAutomaton : MonoBehaviour
     [SerializeField, Tooltip("Prefab used to display each cell")]
     GameObject cellPrefab;
 
-    [SerializeField, Tooltip("Number of roaws in the cellular automaton"), Range(1, 50)]
+    [SerializeField, Tooltip("Number of roaws in the cellular automaton"), Range(1, 256)]
     int rows = 6;
 
-    [SerializeField, Tooltip("Size of the rows in the cellular automaton"), Range(1, 50)]
+    [SerializeField, Tooltip("Size of the rows in the cellular automaton"), Range(1, 256)]
     int columns = 8;
 
     [SerializeField, Range(1, 5)]
@@ -46,6 +46,22 @@ public class CellularAutomaton : MonoBehaviour
     float UpdateRepeatRate => 1f / updatesPerSecond;
 
     ref Grid GetGrid() => ref grid;
+
+    private void OnValidate()
+    {
+        // Clamp drift values to [-1, 1]
+        ref var s_drift = ref startingCell.drift;
+        if (s_drift.x > 1) s_drift.x = 1;
+        if (s_drift.x < -1) s_drift.x = -1;
+        if (s_drift.y > 1) s_drift.y = 1;
+        if (s_drift.y < -1) s_drift.y = -1;
+
+        ref var p_drift = ref paintedCell.drift;
+        if (p_drift.x > 1) p_drift.x = 1;
+        if (p_drift.x < -1) p_drift.x = -1;
+        if (p_drift.y > 1) p_drift.y = 1;
+        if (p_drift.y < -1) p_drift.y = -1;
+    }
 
     private void Start()
     {
@@ -91,8 +107,8 @@ public class CellularAutomaton : MonoBehaviour
     public void NextTick()
     {
         OnUpdate?.Invoke();
-        grid.Update();
-        visualiser.UpdateVisualisation();
+        int[] updated = grid.Update();
+        visualiser.UpdateVisualisation(updated);
     }
 
     // For input call
@@ -111,7 +127,7 @@ public class CellularAutomaton : MonoBehaviour
     public void OverrideCell(int index, Cell newCell)
     {
         grid[index] = newCell;
-        visualiser.UpdateVisualisation();
+        visualiser.UpdateVisualisation(index);
     }
 
     public void ToggleRepeatingUpdate()
