@@ -22,7 +22,11 @@ public partial struct Cell : IEquatable<Cell>
         damage,                 // Damage the cell can deal to others (health damage).
         appliedDecayStack,
         decayDamage,
-        liquidLevel;
+        liquidLevel,
+        temperature,
+        heat,
+        heatAbosorption,
+        meltingPoint;
 
     public int2 drift;          // How much the cell should move in either direction every update
 
@@ -93,6 +97,10 @@ public partial struct Cell
                appliedDecayStack == other.appliedDecayStack &&
                decayDamage == other.decayDamage &&
                liquidLevel == other.liquidLevel &&
+               temperature == other.temperature &&
+               heat == other.heat &&
+               heatAbosorption == other.heatAbosorption &&
+               meltingPoint == other.meltingPoint &&
                drift.Equals(other.drift) &&
                isEmpty == other.isEmpty;
     }
@@ -108,6 +116,10 @@ public partial struct Cell
         hash.Add(appliedDecayStack);
         hash.Add(decayDamage);
         hash.Add(liquidLevel);
+        hash.Add(temperature);
+        hash.Add(heat);
+        hash.Add(heatAbosorption);
+        hash.Add(meltingPoint);
         hash.Add(drift);
         hash.Add(isEmpty);
         return hash.ToHashCode();

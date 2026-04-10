@@ -3,6 +3,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
 
+
 /// <summary>
 /// Holds all the types of functions you could use in a <see cref="Grid.Update"/> call.
 /// Each function is to be handled as a function pointer to be called in the <see cref="UpdateGridJob"/>.
@@ -16,9 +17,6 @@ public static class FunctionLibrary
     public enum FunctionName { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay , UpdateWorldSimulation}
 
     static Function[] functions = { SwitchState , InheritNeighbourSingular , GameOfLife , ProcessHealthDecay , UpdateWorldSimulation};
-
-    // Grid the functions will work in reference to
-    public static Grid grid;
 
     /// <summary>
     /// Return the function callback for a grid function.
@@ -124,23 +122,32 @@ public static class FunctionLibrary
         {
             if (grid.TryGetNeighbourhoodCellIndex(index, i, out int neighbour) && neighbour != index)
             {
-
-                // This cell is empty checks
+                // If   -> the current cell is empty
+                // else -> cell is not empty checks
                 if (grid[index].isEmpty == 1)
                 {
                     // Liquid checks
                     if (grid[neighbour].liquidLevel > 0) BecomeLiquidFromNeighbour(neighbour, in grid, ref output);
 
-                    // --- MOVEMENT CHECK ---
+                    // Check if cells move into here
                     UpdateCellDrift(index, in grid, in movementRequests, i, neighbour);
                 }
                 else
                 {
                     if (grid[index].liquidLevel > 0) UpdateLiquidLevel(ref output);
+
+                    // Initial temperature check (check melting after all neighbours checked)
+                    if (output.heatAbosorption > 0) UpdateTemperatureAndHeat(in grid, ref output, neighbour);
                 }
             }
         }
 
+        // Second temperature check - melt cell if it's too hot (and not already a liquid)
+        AdjustIfMelted(grid, ref output);
+
+        // --- FUNCTION END ---
+
+        #region helpers
         // Create movement requests 
         static void UpdateCellDrift(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, int i, int neighbour)
         {
@@ -178,6 +185,28 @@ public static class FunctionLibrary
 
         // If the cell's liquid were to update then the level should be reduced.
         static void UpdateLiquidLevel(ref Cell output) => output.liquidLevel -= 1;
+
+        // Will melt the cell if needed
+        static void AdjustIfMelted(in Grid grid, ref Cell output)
+        {
+            if (output.liquidLevel <= 0 && output.temperature > output.meltingPoint)
+            {
+                output.liquidLevel += grid.MELTING_LIQUID;
+                output.heat += grid.MELTING_HEAT;
+            }
+        }
+
+        // Makes the cell hotter based on the neighbour's temperature, provided the cell can absorb the heat
+        static void UpdateTemperatureAndHeat(in Grid grid, ref Cell output, int neighbour)
+        {
+            // Maximum heat added is clamped by how much heat the cell can absorb
+            float heat = grid[neighbour].heat;
+            float remainder = math.max(output.heatAbosorption - heat, 0);
+            float heatToAdd = math.clamp(heat, 0, remainder);
+            output.heatAbosorption = remainder;
+            output.temperature += heatToAdd;
+        }
+        #endregion
     }
 }
 

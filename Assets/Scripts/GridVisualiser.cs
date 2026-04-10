@@ -16,6 +16,22 @@ public class GridVisualiser : MonoBehaviour
     [SerializeField]
     Material fallbackMaterial;
 
+    [Header("Cell attribute adjustments")]
+    [SerializeField, Min(0.01f)]
+    float maxTemperatureSmoothness = 50f;
+
+    [SerializeField, Min(0.01f)]
+    float maxHealthTransparency = 10f;
+
+    [SerializeField, Range(0f, 1f), Tooltip("How much heat contributes to emission")]
+    float heatEmission = 0.3f;
+
+    [SerializeField, Min(0f)]
+    float maxEmissionIntensity = 5f;
+
+    [SerializeField, Min(0f)]
+    float metallicLiquid = 0.5f;
+
     GameObject prefab;
     Grid grid;
 
@@ -73,23 +89,31 @@ public class GridVisualiser : MonoBehaviour
 
     public void UpdateVisualisation(int cell) => ApplyCellColour(cell);
 
-    // Some part of this has a GC allocation that needs to be resolved
+
     // Individually change the colour of cell i
+    // MIGHT be necessary to make a custom material shader since this gets very slow if it needs to update a lot of materials
     void ApplyCellColour(int i)
     {
-        var obj = drawnObjects[i];
+        Cell target = grid[i];          // Should be a reference to the cell but you can't do that without an (unsafe) extension function
         var renderer = renderers[i];
-        materialMap.TryGetValue(grid[i].material, out var materialValues);
+        materialMap.TryGetValue(target.material, out var materialValues);
         var color = materialValues.color;
-        color.a = Mathf.Clamp(grid[i].health / 10f, 0f, 1f);
 
-        // This part is unoptimised
+        // Adjust based on cell properties
+        color.a = Mathf.Clamp(target.health / maxHealthTransparency, 0f, 1f);
+        float temperatureSmoothness = Mathf.Clamp(materialValues.smoothness + (target.temperature / maxTemperatureSmoothness), 0f, 1f);
+        float emissiveHeat = Mathf.Clamp((target.heat * heatEmission) + materialValues.emissionIntensity, 0f, maxEmissionIntensity);
+        float metallicMapLiquid = Mathf.Clamp((target.liquidLevel * metallicLiquid) + materialValues.metallicMap, 0f, 1f);
+
+        // Apply material changes (this part is unoptimised)
         renderer.GetPropertyBlock(block);
         if (materialValues.texture != null) block.SetTexture("_BaseMap", materialValues.texture);
         block.SetColor("_BaseColor", color);
-        block.SetColor("_EmissionColor", materialValues.emissionColor * materialValues.emissionIntensity);
-        block.SetFloat("_Metallic", materialValues.metallicMap);
+        block.SetColor("_EmissionColor", materialValues.emissionColor * emissiveHeat);
+        block.SetFloat("_Metallic", metallicMapLiquid);
+        block.SetFloat("_Smoothness", temperatureSmoothness);
         renderer.SetPropertyBlock(block); 
+        
     }
 
     /// <summary>

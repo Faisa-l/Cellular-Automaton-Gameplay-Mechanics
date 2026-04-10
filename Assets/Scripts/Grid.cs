@@ -5,6 +5,7 @@ using Unity.Burst;
 using UnityEngine;
 using static FunctionLibrary;
 using Random = Unity.Mathematics.Random;
+using System.Linq;
 
 /// <summary>
 /// A grid represents the area which cells inhabit.
@@ -21,6 +22,10 @@ public struct Grid
     FunctionPointer<Function> function;
 
     static Random rand = Random.CreateFromIndex((uint)Time.time);
+
+    // Special const-like variables for cell interactions; these can be adjusted on each grid instance 
+    public float MELTING_LIQUID;    // If cell melts, how much liquid should it take
+    public float MELTING_HEAT;      // If cell melts, how much hotter should it get
 
     public int Rows { get; private set; }
     public int Columns { get; private set; }
@@ -47,6 +52,8 @@ public struct Grid
     {
         Rows = rows;
         Columns = columns;
+        MELTING_LIQUID = 3f;
+        MELTING_HEAT = 8f;
         
         cells = new NativeArray<Cell>(Size, Allocator.Persistent);
         for (int i = 0; i <= Size - 1; i++)

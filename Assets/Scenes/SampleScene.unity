@@ -155,21 +155,25 @@ MonoBehaviour:
   columns: 256
   neighbourhoodSize: 1
   functionName: 4
-  updatesPerSecond: 24
+  updatesPerSecond: 60
   repeatingUpdate: 0
   startingCell:
     state: 1
-    material: 2
+    material: 5
     health: 10
     healthDecayStack: 0
     damage: 0
     appliedDecayStack: 0
     decayDamage: 0
     liquidLevel: 0
+    temperature: 10
+    heat: 0
+    heatAbosorption: 5
+    meltingPoint: 20
     drift:
       x: 0
       y: 0
-    isEmpty: 1
+    isEmpty: 0
   paintedCell:
     state: 1
     material: 4
@@ -179,6 +183,10 @@ MonoBehaviour:
     appliedDecayStack: 2
     decayDamage: 5
     liquidLevel: 3
+    temperature: 0
+    heat: 0
+    heatAbosorption: 0
+    meltingPoint: 0
     drift:
       x: 0
       y: 1
@@ -240,11 +248,22 @@ MonoBehaviour:
   - type: 4
     texture: {fileID: 0}
     color: {r: 0, g: 0.81057835, b: 1, a: 0}
-    emissionColor: {r: 0, g: 0, b: 0, a: 0}
+    emissionColor: {r: 0, g: 0.6403694, b: 1, a: 0}
+    emissionIntensity: 0
+    metallicMap: 0
+    smoothness: 0.5
+  - type: 5
+    texture: {fileID: 0}
+    color: {r: 1, g: 0.60432446, b: 0.2688679, a: 0}
+    emissionColor: {r: 1, g: 0.37272787, b: 0, a: 0}
     emissionIntensity: 0
     metallicMap: 0
     smoothness: 0.5
   fallbackMaterial: {fileID: 2100000, guid: dad7d67b16ee61a4bac5e20c6a3afaba, type: 2}
+  maxTemperatureSmoothness: 50
+  maxHealthTransparency: 10
+  heatEmission: 0.3
+  maxEmissionIntensity: 5
 --- !u!114 &199781313
 MonoBehaviour:
   m_ObjectHideFlags: 0
