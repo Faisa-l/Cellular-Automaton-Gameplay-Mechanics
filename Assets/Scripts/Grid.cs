@@ -27,9 +27,10 @@ public struct Grid
     public float MELTING_LIQUID;    // If cell melts, how much liquid should it take
     public float MELTING_HEAT;      // If cell melts, how much hotter should it get
 
+    public Cell BackgroundCell { get; private set; }
     public int Rows { get; private set; }
     public int Columns { get; private set; }
-    public readonly int Size => (Rows * Columns);
+    public readonly int Size => Rows * Columns;
     public readonly int NeighbourhoodLength => 4 * neighbourhoodSize * (neighbourhoodSize + 1);
     public void UpdateCellState(int index, CellState state) => cells[index] = new Cell { state = state };
 
@@ -54,6 +55,7 @@ public struct Grid
         Columns = columns;
         MELTING_LIQUID = 3f;
         MELTING_HEAT = 8f;
+        BackgroundCell = defaultCell;
         
         cells = new NativeArray<Cell>(Size, Allocator.Persistent);
         for (int i = 0; i <= Size - 1; i++)
@@ -100,7 +102,7 @@ public struct Grid
                 var candidates = movementRequests.GetValuesForKey(request);
                 int winner = PickRandomCandidate(candidates);
                 newCells[request] = newCells[winner];
-                newCells[winner] = Cell.DefaultAir;
+                newCells[winner] = BackgroundCell;
                 updatedIndicies.AddNoResize(winner);
                 updatedIndicies.AddNoResize(request);
             }
