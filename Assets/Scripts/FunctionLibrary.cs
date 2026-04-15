@@ -118,6 +118,11 @@ public static class FunctionLibrary
     public static void UpdateWorldSimulation(int index, in Grid grid, in NativeParallelMultiHashMap<int, int>.ParallelWriter movementRequests, out Cell output)
     {
         output = grid[index];
+
+        // Work on cell before checking neighbourhood
+        if (grid[index].liquidLevel > 0) UpdateLiquidLevel(ref output);
+
+        // Work on each cell in neighbourhood
         for (int i = 0; i < grid.NeighbourhoodLength + 1; i++)
         {
             if (grid.TryGetNeighbourhoodCellIndex(index, i, out int neighbour) && neighbour != index)
@@ -134,14 +139,13 @@ public static class FunctionLibrary
                 }
                 else
                 {
-                    if (grid[index].liquidLevel > 0) UpdateLiquidLevel(ref output);
-
                     // Initial temperature check (check melting after all neighbours checked)
                     if (output.heatAbosorption > 0) UpdateTemperatureAndHeat(in grid, ref output, neighbour);
                 }
             }
         }
 
+        // Work on cell after checking neighbourhood
         // Second temperature check - melt cell if it's too hot (and not already a liquid)
         AdjustIfMelted(grid, ref output);
 
