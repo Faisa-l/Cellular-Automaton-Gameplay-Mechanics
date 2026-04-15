@@ -106,9 +106,9 @@ public class CellularAutomaton : MonoBehaviour
 
     public void NextTick()
     {
-        OnUpdate?.Invoke();
         int[] updated = grid.Update();
         visualiser.UpdateVisualisation(updated);
+        OnUpdate?.Invoke();
     }
 
     // For input call

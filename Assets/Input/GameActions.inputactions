@@ -58,6 +58,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleGridInspector",
+                    "type": "Button",
+                    "id": "5502007c-d281-4a4b-8531-0a96fb6431b4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -212,6 +221,17 @@
                     "processors": "",
                     "groups": ";Keyboard + Mouse",
                     "action": "PerformEvaluation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9f2471f4-04d7-486d-834a-c3e2fcf700c9",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard + Mouse",
+                    "action": "ToggleGridInspector",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

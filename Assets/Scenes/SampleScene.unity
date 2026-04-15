@@ -119,6 +119,78 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &26325160 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6699965110235143926, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+  m_PrefabInstance: {fileID: 29446107}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d1b6e3edda5d3d4ba6d76b293063650, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1001 &29446107
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2656081814569495895, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656081814569495895, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656081814569495895, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656081814569495895, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656081814569495895, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656081814569495895, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656081814569495895, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656081814569495895, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656081814569495895, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2656081814569495895, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6699965110235143926, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: playerInput
+      value: 
+      objectReference: {fileID: 11400000, guid: 29d80a30e9109f642ac1f1725aa112c6, type: 2}
+    - target: {fileID: 7155707561767469168, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: m_Name
+      value: Actor
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
 --- !u!1 &199781309
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,6 +203,7 @@ GameObject:
   - component: {fileID: 199781310}
   - component: {fileID: 199781312}
   - component: {fileID: 199781313}
+  - component: {fileID: 199781314}
   m_Layer: 0
   m_Name: Cellular Automaton
   m_TagString: Untagged
@@ -155,7 +228,7 @@ MonoBehaviour:
   columns: 256
   neighbourhoodSize: 1
   functionName: 4
-  updatesPerSecond: 60
+  updatesPerSecond: 12
   repeatingUpdate: 0
   startingCell:
     state: 1
@@ -173,7 +246,7 @@ MonoBehaviour:
     drift:
       x: 0
       y: 0
-    isEmpty: 0
+    isEmpty: 1
   paintedCell:
     state: 1
     material: 4
@@ -189,7 +262,7 @@ MonoBehaviour:
     meltingPoint: 0
     drift:
       x: 0
-      y: 1
+      y: 0
     isEmpty: 0
 --- !u!4 &199781311
 Transform:
@@ -264,6 +337,7 @@ MonoBehaviour:
   maxHealthTransparency: 10
   heatEmission: 0.3
   maxEmissionIntensity: 5
+  metallicLiquid: 0.5
 --- !u!114 &199781313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -280,6 +354,23 @@ MonoBehaviour:
   mode: 2
   minimumHealthThreshold: 0
   maximumHealthThreshold: 0
+--- !u!114 &199781314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199781309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b9f7f258fbc98645ba30cb7b0cd62cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actors:
+  - {fileID: 26325160}
+  playerActor: {fileID: 0}
+  cellularAutomaton: {fileID: 199781310}
+  actorPositionOffset: {x: 0, y: 1.2, z: 0}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -859,6 +950,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 913602473}
+        m_TargetAssemblyTypeName: Game, Assembly-CSharp
+        m_MethodName: OnMoveInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 5faae295-a10e-4072-853d-dcf96aaa85fb
     m_ActionName: 'Game/MoveObject[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]'
   m_NeverAutoSwitchControlSchemes: 0
@@ -880,6 +983,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   automaton: {fileID: 199781310}
   healthEvaluation: {fileID: 0}
+  inputDirection: {fileID: 11400000, guid: 29d80a30e9109f642ac1f1725aa112c6, type: 2}
 --- !u!4 &913602474
 Transform:
   m_ObjectHideFlags: 0
@@ -1049,6 +1153,10 @@ PrefabInstance:
     - target: {fileID: 7936662892810769553, guid: a05da6ab0c64c434fa6cdd17cc2fbaef, type: 3}
       propertyPath: m_Name
       value: Game Entity
+      objectReference: {fileID: 0}
+    - target: {fileID: 7936662892810769553, guid: a05da6ab0c64c434fa6cdd17cc2fbaef, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1221,3 +1329,4 @@ SceneRoots:
   - {fileID: 913602474}
   - {fileID: 831638346}
   - {fileID: 1062475185}
+  - {fileID: 29446107}

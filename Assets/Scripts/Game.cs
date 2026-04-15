@@ -14,10 +14,8 @@ public class Game : MonoBehaviour
     [SerializeField]
     HealthEvaluation healthEvaluation;
 
-    private void Awake()
-    {
-
-    }
+    [SerializeField]
+    PlayerInputDirection inputDirection;
 
     // Bind to an event to proceed the tick of the automaton
     public void ProceedTick(CallbackContext context)
@@ -50,5 +48,11 @@ public class Game : MonoBehaviour
         {
             healthEvaluation.Evaluate();
         }
+    }
+
+    public void OnMoveInput(CallbackContext context)
+    {
+        var input = context.ReadValue<Vector2>();
+        inputDirection.input = input;
     }
 }

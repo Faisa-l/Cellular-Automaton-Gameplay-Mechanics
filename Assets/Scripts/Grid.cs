@@ -5,7 +5,6 @@ using Unity.Burst;
 using UnityEngine;
 using static FunctionLibrary;
 using Random = Unity.Mathematics.Random;
-using System.Linq;
 
 /// <summary>
 /// A grid represents the area which cells inhabit.
@@ -179,6 +178,8 @@ public struct Grid
 
         return valid;
     }
+
+    public readonly bool TryGetCellIndex(Vector2Int position, out int index) => TryGetCellIndex(position.y, position.x, out index);
 
 
     #region Unused
