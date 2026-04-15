@@ -40,8 +40,8 @@ public class GridActor : MonoBehaviour
     {
         if (useRandomMoveTo)
         {
-            moveTo.x = Random.Range(-1, 1);
-            moveTo.y = Random.Range(-1, 1);
+            moveTo.x = Random.Range(-1, 2);
+            moveTo.y = Random.Range(-1, 2);
         }
         else if (playerInput != null)
         {
@@ -54,7 +54,7 @@ public class GridActor : MonoBehaviour
         Vector2Int predictedPosition = GridPosition + moveTo;
         if (grid.TryGetCellIndex(predictedPosition, out int destinationIndex))
         {
-            if (grid[destinationIndex].material == CellMaterial.Water && grid[destinationIndex].isEmpty == 1)
+            if (grid[destinationIndex].material == CellMaterial.Water || grid[destinationIndex].isEmpty == 0)
             {
                 moveTo = new(0, 0);
             }
