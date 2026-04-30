@@ -35,6 +35,9 @@ public class TraversalEvaluator : MonoBehaviour
     private void OnEnable() => cellularAutomaton.OnUpdate += EvaluateActors;
     private void OnDisable() => cellularAutomaton.OnUpdate -= EvaluateActors;
 
+    // Performs the movement of every tracked actor.
+    // Actors request where to move with actor.moveTo; this function actually process that request
+    // Has to manage collisions between other actors and any other limitations
     public void EvaluateActors()
     {
         for (int i = 0; i < actors.Count; i++)
@@ -56,7 +59,7 @@ public class TraversalEvaluator : MonoBehaviour
             }
 
             // Move actor and update its tracked position
-            trackedActorPositions[i] = actor.GridPosition = destination;
+            actor.GridPosition = trackedActorPositions[i] = destination;
         }
     }
 }

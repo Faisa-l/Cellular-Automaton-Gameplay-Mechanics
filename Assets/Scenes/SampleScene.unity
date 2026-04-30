@@ -375,15 +375,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 7790273893292421316, guid: 1b4ee666d235cf841b1c7772e22de35a, type: 3}
-  rows: 256
-  columns: 256
+  rows: 8
+  columns: 8
   neighbourhoodSize: 1
   functionName: 4
   updatesPerSecond: 12
   repeatingUpdate: 0
   startingCell:
     state: 1
-    material: 5
+    material: 7
     health: 10
     healthDecayStack: 0
     damage: 0
@@ -483,6 +483,13 @@ MonoBehaviour:
     emissionIntensity: 0
     metallicMap: 0
     smoothness: 0.5
+  - type: 7
+    texture: {fileID: 0}
+    color: {r: 0.5596056, g: 1, b: 0, a: 0}
+    emissionColor: {r: 0, g: 1, b: 0.38465786, a: 0}
+    emissionIntensity: 0
+    metallicMap: 0
+    smoothness: 0.389
   fallbackMaterial: {fileID: 2100000, guid: dad7d67b16ee61a4bac5e20c6a3afaba, type: 2}
   maxTemperatureSmoothness: 50
   maxHealthTransparency: 10
@@ -1548,16 +1555,20 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6699965110235143926, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
+      propertyPath: useRandomSpawn
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6699965110235143926, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
       propertyPath: useRandomMoveTo
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6699965110235143926, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
       propertyPath: startingPosition.x
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6699965110235143926, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
       propertyPath: startingPosition.y
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7155707561767469168, guid: 0d07339eb78808e45b7f1251c126b951, type: 3}
       propertyPath: m_Name
