@@ -490,6 +490,13 @@ MonoBehaviour:
     emissionIntensity: 0
     metallicMap: 0
     smoothness: 0.389
+  - type: 6
+    texture: {fileID: 0}
+    color: {r: 1, g: 0.14817415, b: 0, a: 0}
+    emissionColor: {r: 1, g: 0.011043971, b: 0, a: 0}
+    emissionIntensity: 5.87
+    metallicMap: 0
+    smoothness: 0
   fallbackMaterial: {fileID: 2100000, guid: dad7d67b16ee61a4bac5e20c6a3afaba, type: 2}
   maxTemperatureSmoothness: 50
   maxHealthTransparency: 10
