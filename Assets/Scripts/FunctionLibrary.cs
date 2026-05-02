@@ -204,9 +204,10 @@ public static class FunctionLibrary
         static void UpdateTemperatureAndHeat(in Grid grid, ref Cell output, int neighbour)
         {
             // Maximum heat added is clamped by how much heat the cell can absorb
+            output.heatAbosorption = math.max(output.heatAbosorption, 0);
             float heat = grid[neighbour].heat;
             float remainder = math.max(output.heatAbosorption - heat, 0);
-            float heatToAdd = math.clamp(heat, 0, remainder);
+            float heatToAdd = math.clamp(heat, 0, output.heatAbosorption);
             output.heatAbosorption = remainder;
             output.temperature += heatToAdd;
         }
